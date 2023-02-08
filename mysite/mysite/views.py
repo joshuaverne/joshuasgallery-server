@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from .forms import NewUserForm
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 from django.http import HttpResponse
 from django.contrib.auth.forms import AuthenticationForm #add this
@@ -38,5 +38,11 @@ def login_request(request):
     return render(request=request, template_name="mysite/login.html", context={"login_form": form})
 
 
+def logout_request(request):
+    logout(request)
+    messages.info(request, "You have successfully logged out.")
+    return redirect("homepage")
+
+
 def homepage(request):
-    return HttpResponse("You're at the homepage!")
+    return render(request=request, template_name="mysite/homepage.html")
