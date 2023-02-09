@@ -9,7 +9,7 @@ def index(request):
     pieces_list = GalleryPiece.objects.all()
     output = ', '.join([e.name for e in exhibition_list])
     output += ', '.join(p.title for p in pieces_list)
-    return HttpResponse(output)
+    return render(request=request, template_name="mysite/my_gallery_dashboard.html")
 
 
 def exhibition_detail(request, exhibition_id):
