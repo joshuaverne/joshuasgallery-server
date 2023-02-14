@@ -2,7 +2,7 @@ from django import forms
 from models import GalleryPiece
 
 
-class NewGalleryPieceForm():
+class NewGalleryPieceForm(forms.ModelForm):
     title = forms.CharField(required=True)
 
     class Meta:
