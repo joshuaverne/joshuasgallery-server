@@ -28,6 +28,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     'ec2-54-209-198-68.compute-1.amazonaws.com',
+    'ec2-44-203-101-221.compute-1.amazonaws.com',
     'localhost']
 
 
