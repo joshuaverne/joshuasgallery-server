@@ -16,15 +16,6 @@
     <p>Welcome to the gallery dashboard!</p>
 </div>
 
-<div class="container col-md-6">
-    <div class="mb-5">
-        <label for="Image" class="form-label">Upload New Image</label>
-        <input class="form-control" type="file" id="formFile" onchange="preview()">
-        <button onclick="clearImage()" class="btn btn-primary mt-3">Click me</button>
-    </div>
-    <img id="frame" src="" class="img-fluid" />
-</div>
-
 <script>
     function preview() {
         frame.src = URL.createObjectURL(event.target.files[0]);
