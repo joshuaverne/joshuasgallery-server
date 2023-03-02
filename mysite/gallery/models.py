@@ -11,12 +11,15 @@ class Exhibition(models.Model):
 
 
 class GalleryPiece(models.Model):
-    title = models.CharField(max_length=500)
-    description = models.CharField(max_length=1000)
+    title = models.CharField(max_length=500, blank=True)
+    description = models.CharField(max_length=1000, blank=True)
     pub_date = models.DateTimeField('date published to gallery')
-    galleries = models.ManyToManyField(Exhibition)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    galleries = models.ManyToManyField(Exhibition, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def clean(self):
+        if self.title == "":
+            self.title = "Untitled " + self.pub_date.__str__().split(" ")[0]
 
     def __str__(self):
         return self.title
-
