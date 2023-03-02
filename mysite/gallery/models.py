@@ -11,7 +11,8 @@ class Exhibition(models.Model):
 
 
 class GalleryPiece(models.Model):
-    title = models.CharField(max_length=200)
+    title = models.CharField(max_length=500)
+    description = models.CharField(max_length=1000)
     pub_date = models.DateTimeField('date published to gallery')
     galleries = models.ManyToManyField(Exhibition)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)

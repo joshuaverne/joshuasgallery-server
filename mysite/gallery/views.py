@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 from django.utils import timezone
 
 from .models import GalleryPiece, Exhibition
