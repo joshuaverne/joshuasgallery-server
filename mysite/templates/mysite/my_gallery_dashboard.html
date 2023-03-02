@@ -14,16 +14,13 @@
 
 <div class="container py-5">
     <p>Welcome to the gallery dashboard!</p>
+    {% block new_gallery_piece_form %}
+    <form action="add-gallery-piece" method="post">
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit" value="Submit">
+    </form>
+    {% endblock %}
 </div>
-
-<script>
-    function preview() {
-        frame.src = URL.createObjectURL(event.target.files[0]);
-    }
-    function clearImage() {
-        document.getElementById('formFile').value = null;
-        frame.src = "";
-    }
-</script>
 
 {% endblock %}

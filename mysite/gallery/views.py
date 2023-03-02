@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.utils import timezone
 
 from .models import GalleryPiece, Exhibition
@@ -32,18 +32,18 @@ def get_new_gallery_piece(request):
         form = NewGalleryPieceForm(request.POST)
         # check whether it's valid:
         if form.is_valid():
-            # process the data in form.cleaned_data as required
-            # TODO: create the new GalleryPiece, add it to the database
-            new_gallery_piece = GalleryPiece(title=form.cleaned_data.get(key="title"),
+            # construct a new gallery piece with the form data
+            new_gallery_piece = GalleryPiece(title=form.cleaned_data.get("title"),
                                              pub_date=timezone.now(),
                                              user=request.user)
+            # save the new gallery piece to the database
             new_gallery_piece.save()
 
             # redirect to a new URL:
-            return HttpResponse("New Piece Saved Successfully.")
+            return HttpResponseRedirect("/gallery")
 
     # if a GET (or any other method) we'll create a blank form
     else:
         form = NewGalleryPieceForm()
 
-    return render(request, 'name.html', {'form': form})
+    return render(request, 'mysite/new_gallery_piece_form.html', {'form': form})
