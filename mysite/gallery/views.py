@@ -1,3 +1,5 @@
+import http
+
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.utils import timezone
@@ -7,6 +9,9 @@ from .forms import NewGalleryPieceForm
 
 
 def index(request):
+    if not request.user.is_authenticated:
+        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED)
+
     pieces_list = GalleryPiece.objects.filter(user=request.user)
     output = ', '.join(p.title for p in pieces_list)
     return render(request=request,
