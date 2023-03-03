@@ -1,11 +1,5 @@
-{% extends "mysite/my_gallery_dashboard.html" %}
-
-{% block new_gallery_piece_form %}
-
 <form action="add-gallery-piece" method="post">
     {% csrf_token %}
     {{ form }}
     <input type="submit" value="Submit">
 </form>
-
-{% endblock %}

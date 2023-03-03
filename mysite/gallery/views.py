@@ -48,4 +48,4 @@ def get_new_gallery_piece(request):
     else:
         form = NewGalleryPieceForm()
 
-    return render(request, 'mysite/new_gallery_piece_form.html', {'form': form})
+    return render(request, 'mysite/forms/new_gallery_piece_form.html', {'form': form})
