@@ -7,13 +7,11 @@ from .forms import NewGalleryPieceForm
 
 
 def index(request):
-    exhibition_list = Exhibition.objects.all()
-    pieces_list = GalleryPiece.objects.all()
-    output = ', '.join([e.name for e in exhibition_list])
-    output += ', '.join(p.title for p in pieces_list)
+    pieces_list = GalleryPiece.objects.filter(user=request.user)
+    output = ', '.join(p.title for p in pieces_list)
     return render(request=request,
                   template_name="mysite/my_gallery_dashboard.html",
-                  context={'form': NewGalleryPieceForm()})
+                  context={'form': NewGalleryPieceForm(), 'pieces': output})
 
 
 def exhibition_detail(request, exhibition_id):
