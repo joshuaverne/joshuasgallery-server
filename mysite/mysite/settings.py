@@ -31,6 +31,8 @@ ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1']
 
+CSRF_TRUSTED_ORIGINS = ["https://ec2-3-90-5-177.compute-1.amazonaws.com"]
+
 # Application definition
 
 INSTALLED_APPS = [
