@@ -15,4 +15,4 @@ WORKDIR /code
 EXPOSE 8000
 
 # runs the production server
-CMD ["gunicorn", "-b", "127.0.0.1:8000", "mysite.wsgi"]
+CMD ["gunicorn", "-b", "0.0.0.0:8000", "mysite.wsgi"]

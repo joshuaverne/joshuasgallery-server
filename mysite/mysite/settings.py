@@ -27,7 +27,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     'ec2-3-90-5-177.compute-1.amazonaws.com',
-    'localhost']
+    'localhost',
+    '127.0.0.1']
 
 # Application definition
 
