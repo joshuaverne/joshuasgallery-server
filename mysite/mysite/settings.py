@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-#xj+on*qb$1+&ktfv-u(d%*)ucsl0=j1-s6v38=crugaum*s87
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'ec2-3-90-5-177.compute-1.amazonaws.com',
+    'joshuasgallery.com',
     '3.90.5.177',
     'localhost',
     '127.0.0.1']
