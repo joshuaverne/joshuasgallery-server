@@ -31,7 +31,7 @@ ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1']
 
-CSRF_TRUSTED_ORIGINS = ["https://ec2-3-90-5-177.compute-1.amazonaws.com"]
+CSRF_TRUSTED_ORIGINS = ["https://joshuasgallery.com"]
 
 # Application definition
 
