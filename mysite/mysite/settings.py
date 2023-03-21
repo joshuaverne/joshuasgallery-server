@@ -16,20 +16,51 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Deployment environment options
+ENV_LOCAL = 'local'
+ENV_PROD = 'prod'
+ENV_DEV = 'dev'
+ENV_OPTIONS = [ENV_LOCAL, ENV_DEV, ENV_PROD]
+
+if 'JGENV' not in os.environ:
+    raise RuntimeError(
+        "No JGENV specified. Choose '{}' for local development.".format(
+            ENV_LOCAL
+        )
+    )
+if os.environ['JGENV'] not in ENV_OPTIONS:
+    raise RuntimeError(
+        "Invalid JGENV specified. Choose '{}' for local development.".format(
+            ENV_LOCAL
+        )
+    )
+ENV = os.environ['JGENV']
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-#xj+on*qb$1+&ktfv-u(d%*)ucsl0=j1-s6v38=crugaum*s87'
+if ENV == ENV_LOCAL:
+    SECRET_KEY = 'django-insecure-#xj+on*qb$1+&ktfv-u(d%*)ucsl0=j1-s6v38=crugaum*s87'
+else:
+    with open(os.path.join(BASE_DIR, '../config/secret_key.txt')) as f:
+        SECRET_KEY = f.read().strip()
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = ENV in [ENV_LOCAL, ENV_DEV]
 
-ALLOWED_HOSTS = [
-    'joshuasgallery.com',
-    '3.90.5.177',
-    'localhost',
-    '127.0.0.1']
+if ENV in [ENV_LOCAL, ENV_DEV]:
+    ALLOWED_HOSTS = [
+        'localhost',
+        '127.0.0.1'
+    ]
+elif ENV == ENV_PROD:
+    ALLOWED_HOSTS = [
+        'joshuasgallery.com',
+        '3.90.5.177'
+    ]
+else:
+    raise RuntimeError("No ALLOWED_HOSTS defined for ENV '{}'".format(ENV))
 
 CSRF_TRUSTED_ORIGINS = ["https://joshuasgallery.com"]
 
@@ -80,13 +111,23 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if ENV in [ENV_LOCAL, ENV_DEV]:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+elif ENV == ENV_PROD:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'OPTIONS': {
+                'read_default_file': os.path.join(BASE_DIR,
+                                                  '../config/mysql.cnf')
+            }
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
