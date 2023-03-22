@@ -126,9 +126,13 @@ elif ENV == ENV_PROD:
             'NAME': 'database-jg-prod',
             'ENGINE': 'django.db.backends.mysql',
             'USER': 'admin',
-            'PASSWORD': DB_PW
+            'PASSWORD': DB_PW,
+            'HOST': 'database-jg-prod.cluster-c6ytnqpjyedh.us-east-1.rds.amazonaws.com',
+            'POST': '3306',
         }
     }
+else:
+    raise RuntimeError("No DATABASES defined for ENV '{}'".format(ENV))
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
