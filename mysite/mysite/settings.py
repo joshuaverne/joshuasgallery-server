@@ -49,10 +49,15 @@ else:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = ENV in [ENV_LOCAL, ENV_DEV]
 
-if ENV in [ENV_LOCAL, ENV_DEV]:
+if ENV == ENV_LOCAL:
     ALLOWED_HOSTS = [
         'localhost',
         '127.0.0.1'
+    ]
+elif ENV == ENV_DEV:
+    ALLOWED_HOSTS = [
+        'ec2-54-237-91-22.compute-1.amazonaws.com',
+        '54.237.91.22',
     ]
 elif ENV == ENV_PROD:
     ALLOWED_HOSTS = [
@@ -111,11 +116,25 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-if ENV in [ENV_LOCAL, ENV_DEV]:
+if ENV == ENV_LOCAL:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+elif ENV == ENV_DEV:
+    with open(os.path.join(BASE_DIR, '../config/database-jg-dev-pw.txt')) as f:
+        DB_PW = f.read().strip()
+    DATABASES = {
+        'default': {
+            # this DB has been created in the RDS instance
+            'NAME': 'jgdev',
+            'ENGINE': 'django.db.backends.mysql',
+            'USER': 'admin',
+            'PASSWORD': DB_PW,
+            'HOST': 'database-jg-dev-instance-1.c6ytnqpjyedh.us-east-1.rds.amazonaws.com',
+            'POST': '3306',
         }
     }
 elif ENV == ENV_PROD:
@@ -123,6 +142,7 @@ elif ENV == ENV_PROD:
         DB_PW = f.read().strip()
     DATABASES = {
         'default': {
+            # this DB has been created in the RDS instance
             'NAME': 'jgprod',
             'ENGINE': 'django.db.backends.mysql',
             'USER': 'admin',
