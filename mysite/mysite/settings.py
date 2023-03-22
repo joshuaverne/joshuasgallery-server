@@ -119,13 +119,14 @@ if ENV in [ENV_LOCAL, ENV_DEV]:
         }
     }
 elif ENV == ENV_PROD:
+    with open(os.path.join(BASE_DIR, '../config/database-jg-prod-pw.txt')) as f:
+        DB_PW = f.read().strip()
     DATABASES = {
         'default': {
+            'NAME': 'database-jg-prod',
             'ENGINE': 'django.db.backends.mysql',
-            'OPTIONS': {
-                'read_default_file': os.path.join(BASE_DIR,
-                                                  '../config/mysql.cnf')
-            }
+            'USER': 'admin',
+            'PASSWORD': DB_PW
         }
     }
 
