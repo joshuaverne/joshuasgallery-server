@@ -123,7 +123,7 @@ elif ENV == ENV_PROD:
         DB_PW = f.read().strip()
     DATABASES = {
         'default': {
-            'NAME': 'database-jg-prod',
+            'NAME': 'jgprod',
             'ENGINE': 'django.db.backends.mysql',
             'USER': 'admin',
             'PASSWORD': DB_PW,
