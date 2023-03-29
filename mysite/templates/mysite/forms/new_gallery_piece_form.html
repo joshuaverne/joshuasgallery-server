@@ -1,5 +1,23 @@
 <form action="add-gallery-piece" method="post">
     {% csrf_token %}
-    {{ form }}
+    <div class="form-group">
+        <label for="inputTitle">Title</label>
+        <input class="form-control" id="inputTitle" placeholder="Enter piece title">
+    </div>
+    <div class="form-group">
+        <label for="inputDescription">Description</label>
+        <textarea class="form-control" id="inputDescription" placeholder="Enter piece description"></textarea>
+    </div>
+    <div class="form-group">
+        <label for="inputImage">Source Image</label>
+        <input class="form-control" id="inputImage" type="file" onchange="preview()">
+        <img id="frame" src="" class="img-fluid">
+    </div>
     <input type="submit" value="Submit">
 </form>
+
+<script>
+    function preview() {
+        frame.src = URL.createObjectURL(event.target.files[0]);
+    }
+</script>
