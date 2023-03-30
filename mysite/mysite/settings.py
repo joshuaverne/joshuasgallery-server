@@ -154,6 +154,21 @@ elif ENV == ENV_PROD:
 else:
     raise RuntimeError("No DATABASES defined for ENV '{}'".format(ENV))
 
+# Media file storage location
+if ENV == ENV_LOCAL:
+    MEDIA_ROOT = os.path.join(BASE_DIR, '../jg-media-files/')
+    MEDIA_URL = '/media/'
+elif ENV == ENV_DEV:
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    AWS_STORAGE_BUCKET_NAME = 'bucket-jg-dev'
+    AWS_S3_REGION_NAME = 'us-east-1'
+elif ENV == ENV_PROD:
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    AWS_STORAGE_BUCKET_NAME = 'bucket-jg-prod'
+    AWS_S3_REGION_NAME = 'us-east-1'
+else:
+    raise RuntimeError("No media storage location defined for ENV '{}'".format(ENV))
+
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
