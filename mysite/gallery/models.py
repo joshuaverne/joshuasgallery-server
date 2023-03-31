@@ -16,6 +16,7 @@ class GalleryPiece(models.Model):
     pub_date = models.DateTimeField('date published to gallery')
     galleries = models.ManyToManyField(Exhibition, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='piece-images', null=True)
 
     def clean(self):
         if self.title == "":
