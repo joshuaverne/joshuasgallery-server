@@ -3,10 +3,13 @@ import http
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.utils import timezone
+from django.core.exceptions import ValidationError
+from django.core.files.storage import default_storage
 
 from .models import GalleryPiece, Exhibition
 from .forms import NewGalleryPieceForm
 
+PIECE_IMG_DIR = "piece-images/"
 
 def index(request):
     if not request.user.is_authenticated:
@@ -33,12 +36,21 @@ def get_new_gallery_piece(request):
 
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
-        # create a form instance and populate it with data from the request:
-        form = NewGalleryPieceForm(request.POST)
+        r_post = request.POST
+        r_files = request.FILES
+
         # check whether it's valid:
-        if form.is_valid():
+        if validate_new_gallery_piece_form(dict(list(r_post.items())[1:]), r_files):
+            piece_image = r_files['pieceImage']
+
+            # save image to default storage
+            ds = default_storage
+            # TODO: figure out default_storage.save() call
+            # ds.save()
+
             # construct a new gallery piece with the form data
-            new_gallery_piece = GalleryPiece(title=form.cleaned_data.get("title"),
+            new_gallery_piece = GalleryPiece(title=r_post.get("pieceTitle"),
+                                             description=r_post.get('pieceDescription'),
                                              pub_date=timezone.now(),
                                              user=request.user)
             new_gallery_piece.clean()
@@ -49,8 +61,24 @@ def get_new_gallery_piece(request):
             # redirect to a new URL:
             return HttpResponseRedirect("/gallery")
 
-    # if a GET (or any other method) we'll create a blank form
+    # if a GET (or any other method) we'll redirect to the gallery page
     else:
-        form = NewGalleryPieceForm()
+        return HttpResponseRedirect("/gallery")
 
-    return render(request, 'mysite/forms/new_gallery_piece_form.html', {'form': form})
+def validate_new_gallery_piece_form(form_data, file_data):
+    if len(form_data) != 2 or len(file_data) != 1:
+        raise ValidationError("Incorrect number of fields in form data")
+
+    title = form_data['pieceTitle']
+    desc = form_data['pieceDescription']
+    img = file_data['pieceImage']
+
+    if len(title) > 500:
+        raise ValidationError("Title too long")
+
+    if len(desc) > 1000:
+        raise ValidationError("Description too long")
+
+    # raise ValidationError("Correct: [" + form_data['pieceTitle'] + ", " + form_data['pieceDescription'] + "]")
+
+    return True
