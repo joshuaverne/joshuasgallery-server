@@ -10,6 +10,7 @@ from .models import GalleryPiece, Exhibition
 from .forms import NewGalleryPieceForm
 
 PIECE_IMG_DIR = "piece-images/"
+ALLOWED_IMG_EXTENSIONS = ["jpg", "jpeg", "png"]
 
 def index(request):
     if not request.user.is_authenticated:
@@ -44,8 +45,8 @@ def get_new_gallery_piece(request):
             piece_image = r_files['pieceImage']
 
             # save image to default storage
-            ds = default_storage
             # TODO: figure out default_storage.save() call
+            save_arg_name = PIECE_IMG_DIR + r_files["inputImage"].name
             # ds.save()
 
             # construct a new gallery piece with the form data
@@ -79,6 +80,10 @@ def validate_new_gallery_piece_form(form_data, file_data):
     if len(desc) > 1000:
         raise ValidationError("Description too long")
 
-    # raise ValidationError("Correct: [" + form_data['pieceTitle'] + ", " + form_data['pieceDescription'] + "]")
+    img_ext = img.name.split(".")[-1]
+    if img_ext not in ALLOWED_IMG_EXTENSIONS:
+        raise ValidationError("Invalid file format: " + img_ext)
+
+    raise ValidationError("Correct: [" + title + ", " + desc + "], " + img.name)
 
     return True
