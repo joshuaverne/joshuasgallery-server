@@ -13,6 +13,7 @@ PIECE_IMG_DIR = "piece-images/"
 ALLOWED_IMG_EXTENSIONS = ["jpg", "jpeg", "png"]
 MAX_IMG_SIZE_BYTES = 10000000
 
+
 def index(request):
     if not request.user.is_authenticated:
         return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED)
@@ -64,6 +65,7 @@ def get_new_gallery_piece(request):
     # if a GET (or any other method) we'll redirect to the gallery page
     else:
         return HttpResponseRedirect("/gallery")
+
 
 def validate_new_gallery_piece_form(form_data, file_data):
     if len(form_data) != 2 or len(file_data) != 1:
