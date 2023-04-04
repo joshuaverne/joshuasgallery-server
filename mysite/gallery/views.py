@@ -43,18 +43,16 @@ def get_new_gallery_piece(request):
 
         # check whether it's valid:
         if validate_new_gallery_piece_form(dict(list(r_post.items())[1:]), r_files):
+            piece_title = r_post['pieceTitle']
+            piece_desc = r_post['pieceDescription']
             piece_image = r_files['pieceImage']
 
-            # save image to default storage
-            # TODO: figure out default_storage.save() call
-            save_arg_name = PIECE_IMG_DIR + r_files["inputImage"].name
-            # ds.save()
-
             # construct a new gallery piece with the form data
-            new_gallery_piece = GalleryPiece(title=r_post.get("pieceTitle"),
-                                             description=r_post.get('pieceDescription'),
+            new_gallery_piece = GalleryPiece(title=piece_title,
+                                             description=piece_desc,
                                              pub_date=timezone.now(),
-                                             user=request.user)
+                                             user=request.user,
+                                             image=piece_image)
             new_gallery_piece.clean()
 
             # save the new gallery piece to the database
@@ -87,7 +85,5 @@ def validate_new_gallery_piece_form(form_data, file_data):
 
     if img.size > MAX_IMG_SIZE_BYTES:
         raise ValidationError("File too large")
-
-    raise ValidationError("Correct: [" + title + ", " + desc + "], " + img.name)
 
     return True
