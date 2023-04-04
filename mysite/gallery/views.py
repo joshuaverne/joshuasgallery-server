@@ -11,6 +11,7 @@ from .forms import NewGalleryPieceForm
 
 PIECE_IMG_DIR = "piece-images/"
 ALLOWED_IMG_EXTENSIONS = ["jpg", "jpeg", "png"]
+MAX_IMG_SIZE_BYTES = 10000000
 
 def index(request):
     if not request.user.is_authenticated:
@@ -83,6 +84,9 @@ def validate_new_gallery_piece_form(form_data, file_data):
     img_ext = img.name.split(".")[-1]
     if img_ext not in ALLOWED_IMG_EXTENSIONS:
         raise ValidationError("Invalid file format: " + img_ext)
+
+    if img.size > MAX_IMG_SIZE_BYTES:
+        raise ValidationError("File too large")
 
     raise ValidationError("Correct: [" + title + ", " + desc + "], " + img.name)
 
