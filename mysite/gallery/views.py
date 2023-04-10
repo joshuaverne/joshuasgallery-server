@@ -4,10 +4,8 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.utils import timezone
 from django.core.exceptions import ValidationError
-from django.core.files.storage import default_storage
 
 from .models import GalleryPiece, Exhibition
-from .forms import NewGalleryPieceForm
 
 PIECE_IMG_DIR = "piece-images/"
 ALLOWED_IMG_EXTENSIONS = ["jpg", "jpeg", "png"]
@@ -22,7 +20,7 @@ def index(request):
     output = ', '.join(p.title for p in pieces_list)
     return render(request=request,
                   template_name="mysite/my_gallery_dashboard.html",
-                  context={'form': NewGalleryPieceForm(), 'pieces': output})
+                  context={'pieces': output})
 
 
 def exhibition_detail(request, exhibition_id):
