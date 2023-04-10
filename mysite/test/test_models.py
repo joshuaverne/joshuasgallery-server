@@ -1,11 +1,14 @@
 from django.test import TestCase
-from mysite.gallery.models import Exhibition, GalleryPiece
+from django.utils import timezone
+from django.contrib.auth.models import User
+from gallery.models import Exhibition, GalleryPiece
 
 
 class GalleryPieceModelTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        GalleryPiece.objects.create(title="The Wave", description="A Painting")
+        john = User.objects.create(username="john")
+        GalleryPiece.objects.create(title="The Wave", description="A Painting", pub_date=timezone.now(), user=john)
 
     def test_title_max_length(self):
         piece = GalleryPiece.objects.get(id=1)
