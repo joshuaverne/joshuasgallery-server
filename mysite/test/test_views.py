@@ -109,3 +109,14 @@ class GalleryPieceFormViewTest(TestCase):
     def test_create_piece_wrong_image_type(self):
         self.assertRaises(ValidationError, self.create_piece_wrong_image_type)
 
+
+class ExhibitionFormViewTest(TestCase):
+
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.user = User.objects.create_user(
+            username="jacob", email="jacob@…", password="top_secret"
+        )
+
+
+

@@ -1,0 +1,20 @@
+<form action="add-exhibition" enctype="multipart/form-data" method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="inputTitle">Title<span style="color: red;">*</span></label>
+        <input class="form-control" id="inputTitle" name="exhibitionTitle" placeholder="Enter exhibition title" required>
+    </div>
+    <div class="form-group">
+        <label for="inputDescription">Description</label>
+        <textarea class="form-control" id="inputDescription" name="exhibitionDescription" placeholder="Enter exhibition description"></textarea>
+    </div>
+    <div class="form-group">
+        <label for="inputPieces">Art Pieces</span></label>
+        <select multiple class="form-control" id="inputPieces" type="file" name="exhibitionPieces">
+            {% for piece in pieces %}
+                <option value ="{{piece}}">{{piece}}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <input type="submit" value="Submit">
+</form>

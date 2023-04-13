@@ -19,10 +19,9 @@ def index(request):
         return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED)
 
     pieces_list = GalleryPiece.objects.filter(user=request.user)
-    output = ', '.join(p.title for p in pieces_list)
     return render(request=request,
                   template_name="mysite/my_gallery_dashboard.html",
-                  context={'pieces': output})
+                  context={'pieces': pieces_list})
 
 
 def exhibition_detail(request, exhibition_id):
