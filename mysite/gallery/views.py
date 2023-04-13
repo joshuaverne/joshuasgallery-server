@@ -1,4 +1,4 @@
-import http
+import http, logging
 
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
@@ -10,6 +10,8 @@ from .models import GalleryPiece, Exhibition
 PIECE_IMG_DIR = "piece-images/"
 ALLOWED_IMG_EXTENSIONS = ["jpg", "jpeg", "png"]
 MAX_IMG_SIZE_BYTES = 10000000
+
+logger = logging.getLogger(__name__)
 
 
 def index(request):
@@ -66,8 +68,11 @@ def get_new_gallery_piece(request):
 
 
 def validate_new_gallery_piece_form(form_data, file_data):
-    if len(form_data) != 2 or len(file_data) != 1:
-        raise ValidationError("Incorrect number of fields in form data")
+    if len(file_data) != 1:
+        raise ValidationError("Incorrect number of fields in FILES data: " + str(len(file_data)) + " (expected 1)")
+
+    if len(form_data) != 2:
+        raise ValidationError("Incorrect number of fields in POST data: " + str(len(form_data)) + " (expected 2)")
 
     title = form_data['pieceTitle']
     desc = form_data['pieceDescription']
