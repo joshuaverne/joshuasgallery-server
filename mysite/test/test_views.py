@@ -1,7 +1,8 @@
-from django.test import RequestFactory, TestCase, Client
+from django.test import RequestFactory, TestCase
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import AnonymousUser, User
 
+# noinspection PyUnresolvedReferences
 from gallery.views import get_new_gallery_piece
 
 
@@ -75,4 +76,36 @@ class GalleryPieceFormViewTest(TestCase):
 
     def test_create_piece_description_too_long(self):
         self.assertRaises(ValidationError, self.create_piece_description_too_long)
+
+    def create_piece_image_too_large(self):
+
+        with open("test/images/city.jpg", "rb") as fp:
+            test_post_data = {'placeholder': "PLACEHOLDER",
+                              'pieceTitle': "title",
+                              'pieceDescription': "desc",
+                              'pieceImage': fp}
+            request = self.factory.post("/gallery/add_gallery_piece", test_post_data)
+
+            request.user = self.user
+
+            get_new_gallery_piece(request)
+
+    def test_create_piece_image_too_large(self):
+        self.assertRaises(ValidationError, self.create_piece_image_too_large)
+
+    def create_piece_wrong_image_type(self):
+
+        with open("test/images/dragon.gif", "rb") as fp:
+            test_post_data = {'placeholder': "PLACEHOLDER",
+                              'pieceTitle': "title",
+                              'pieceDescription': "desc",
+                              'pieceImage': fp}
+            request = self.factory.post("/gallery/add_gallery_piece", test_post_data)
+
+            request.user = self.user
+
+            get_new_gallery_piece(request)
+
+    def test_create_piece_wrong_image_type(self):
+        self.assertRaises(ValidationError, self.create_piece_wrong_image_type)
 
