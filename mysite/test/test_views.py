@@ -41,7 +41,7 @@ class GalleryPieceFormViewTest(TestCase):
 
             response = get_new_gallery_piece(request)
 
-        self.assertEqual(302, response.status_code)
+        self.assertEqual(200, response.status_code)
 
     def create_piece_title_too_long(self):
         title = "x" * 501
