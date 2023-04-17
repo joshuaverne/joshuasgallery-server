@@ -9,8 +9,8 @@
         <textarea class="form-control" id="inputDescription" name="exhibitionDescription" placeholder="Enter exhibition description"></textarea>
     </div>
     <div class="form-group">
-        <label for="inputPieces">Art Pieces</span></label>
-        <select multiple class="form-control" id="inputPieces" type="file" name="exhibitionPieces">
+        <label for="inputPieces">Add Art Pieces</span></label>
+        <select multiple class="form-control" id="inputPieces" name="exhibitionPieces">
             {% for piece in pieces %}
                 <option value ="{{piece}}">{{piece}}</option>
             {% endfor %}

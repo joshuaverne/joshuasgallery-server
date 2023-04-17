@@ -33,7 +33,7 @@ class GalleryPieceFormViewTest(TestCase):
         with open("test/images/woody.jpg", "rb") as fp:
             test_post_data = {'placeholder': "PLACEHOLDER",
                               'pieceTitle': title,
-                              'pieceDescription': title,
+                              'pieceDescription': desc,
                               'pieceImage': fp}
             request = self.factory.post("/gallery/add_gallery_piece", test_post_data)
 

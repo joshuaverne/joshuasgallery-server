@@ -1,7 +1,7 @@
 import http, logging
 
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 
@@ -34,7 +34,7 @@ def piece_detail(request, piece_id):
 
 def get_new_gallery_piece(request):
     if not request.user.is_authenticated:
-        return HttpResponse("You must be logged in to do that.")
+        return HttpResponseNotAllowed("You must be logged in to do that.")
 
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
@@ -91,3 +91,11 @@ def validate_new_gallery_piece_form(form_data, file_data):
         raise ValidationError("File too large")
 
     return True
+
+
+def get_new_exhibition(request):
+    if not request.user.is_authenticated:
+        return HttpResponseNotAllowed("You must be logged in to do that.")
+
+def validate_new_exhibition_form(form_data):
+    pass
