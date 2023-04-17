@@ -1,7 +1,7 @@
 import http, logging
 
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed, HttpResponseBadRequest
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 
@@ -58,8 +58,10 @@ def get_new_gallery_piece(request):
             # save the new gallery piece to the database
             new_gallery_piece.save()
 
-            # redirect to a new URL:
-            return HttpResponseRedirect("/gallery")
+            return render(request=request,
+                          template_name="mysite/my_gallery_dashboard.html",
+                          context={'pieces': GalleryPiece.objects.filter(user=request.user),
+                                   'messages': ["Successfully created new piece: " + piece_title]})
 
     # if a GET (or any other method) we'll redirect to the gallery page
     else:
@@ -97,5 +99,43 @@ def get_new_exhibition(request):
     if not request.user.is_authenticated:
         return HttpResponseNotAllowed("You must be logged in to do that.")
 
+    if request.method == 'POST':
+        r_post = request.POST
+
+        # validate
+        try:
+            validate_new_exhibition_form(dict(list(r_post.items())[1:]))
+        except ValidationError:
+            return HttpResponseBadRequest("Form data invalid")
+        else:
+            exhib_title = r_post['exhibitionTitle']
+            exhib_desc = r_post['exhibitionDescription']
+
+            # construct a new exhibition with the form data
+            new_exhibition = Exhibition(title=exhib_title,
+                                        description=exhib_desc,
+                                        user=request.user)
+
+            new_exhibition.save()
+
+            # redirect to a new URL:
+            return HttpResponseRedirect("/gallery")
+
+    # if a GET (or any other method) we'll redirect to the gallery page
+    else:
+        return HttpResponseRedirect("/gallery")
+
+
 def validate_new_exhibition_form(form_data):
-    pass
+    if len(form_data) != 3:
+        raise ValidationError("Incorrect number of fields in FORM data: " + str(len(form_data)) + " (expected 3)")
+
+    title = form_data['exhibitionTitle']
+    desc = form_data['exhibitionDescription']
+    pieces = form_data['exhibitionPieces']
+
+    if len(title) > 200:
+        raise ValidationError("Exhibition title too long")
+
+    if len(desc) > 1000:
+        raise ValidationError("Exhibition description too long")
