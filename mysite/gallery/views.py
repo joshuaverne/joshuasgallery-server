@@ -19,9 +19,10 @@ def index(request):
         return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED)
 
     pieces_list = GalleryPiece.objects.filter(user=request.user)
+    exhibs_list = Exhibition.objects.filter(user=request.user)
     return render(request=request,
                   template_name="mysite/my_gallery_dashboard.html",
-                  context={'pieces': pieces_list})
+                  context={'pieces': pieces_list, 'exhibs': exhibs_list})
 
 
 def exhibition_detail(request, exhibition_id):
@@ -127,12 +128,11 @@ def get_new_exhibition(request):
 
 
 def validate_new_exhibition_form(form_data):
-    if len(form_data) != 3:
-        raise ValidationError("Incorrect number of fields in FORM data: " + str(len(form_data)) + " (expected 3)")
+    if len(form_data) != 2:
+        raise ValidationError("Incorrect number of fields in FORM data: " + str(len(form_data)) + " (expected 2)")
 
     title = form_data['exhibitionTitle']
     desc = form_data['exhibitionDescription']
-    pieces = form_data['exhibitionPieces']
 
     if len(title) > 200:
         raise ValidationError("Exhibition title too long")
