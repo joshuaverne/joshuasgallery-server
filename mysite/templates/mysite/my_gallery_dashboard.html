@@ -13,12 +13,6 @@
 {% bootstrap_messages %}
 
 <div class="container py-5">
-    {% for msg in messages %}
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{msg}}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    {% endfor %}
     <p>Welcome to the gallery dashboard!</p>
     <p>Pieces: {% for piece in pieces %} {{piece.title}}, {% endfor %}</p>
     <p>Exhibitions: {% for exhib in exhibs %} {{exhib.title}}, {% endfor %}</p>

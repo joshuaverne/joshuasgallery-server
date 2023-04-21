@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed, HttpResponseBadRequest
 from django.utils import timezone
 from django.core.exceptions import ValidationError
+from django.contrib import messages
 
 from .models import GalleryPiece, Exhibition
 
@@ -67,10 +68,9 @@ def get_new_gallery_piece(request):
             # save the new gallery piece to the database
             new_gallery_piece.save()
 
-            return render(request=request,
-                          template_name="mysite/my_gallery_dashboard.html",
-                          context={'pieces': GalleryPiece.objects.filter(user=request.user),
-                                   'messages': ["Successfully created new piece: " + piece_title]})
+            messages.success(request, "Piece created successfully.")
+
+            return HttpResponseRedirect("/gallery")
 
     # if a GET (or any other method) we'll redirect to the gallery page
     else:

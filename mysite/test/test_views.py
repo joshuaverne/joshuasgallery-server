@@ -1,9 +1,27 @@
+import contextlib
+
+from django.contrib.messages.middleware import MessageMiddleware
+from django.contrib.sessions.middleware import SessionMiddleware
 from django.test import RequestFactory, TestCase
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import AnonymousUser, User
 
 # noinspection PyUnresolvedReferences
 from gallery.views import get_new_gallery_piece, get_new_exhibition
+
+
+@contextlib.contextmanager
+def middleware(request):
+    """Annotate a request object with a session"""
+    s_middleware = SessionMiddleware(get_response=1)
+    s_middleware.process_request(request)
+    request.session.save()
+
+    """Annotate a request object with a messages"""
+    m_middleware = MessageMiddleware(get_response=1)
+    m_middleware.process_request(request)
+    request.session.save()
+    yield request
 
 
 class GalleryPieceFormViewTest(TestCase):
@@ -39,9 +57,10 @@ class GalleryPieceFormViewTest(TestCase):
 
             request.user = self.user
 
-            response = get_new_gallery_piece(request)
+            with middleware(request):
+                response = get_new_gallery_piece(request)
 
-        self.assertEqual(200, response.status_code)
+        self.assertEqual(302, response.status_code)
 
     def test_create_piece_anonymous_user(self):
         with open("test/images/woody.jpg", "rb") as fp:
