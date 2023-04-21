@@ -9,6 +9,10 @@ from .models import GalleryPiece, Exhibition
 
 PIECE_IMG_DIR = "piece-images/"
 ALLOWED_IMG_EXTENSIONS = ["jpg", "jpeg", "png"]
+PIECE_TITLE_LEN_MAX = 500
+PIECE_DESC_LEN_MAX = 1000
+EXHIB_TITLE_LEN_MAX = 200
+EXHIB_DESC_LEN_MAX = 1000
 MAX_IMG_SIZE_BYTES = 10000000
 
 logger = logging.getLogger(__name__)
@@ -80,10 +84,10 @@ def validate_new_gallery_piece_form(form_data, file_data):
     desc = form_data['pieceDescription']
     img = file_data['pieceImage']
 
-    if len(title) > 500:
+    if len(title) > PIECE_TITLE_LEN_MAX:
         raise ValidationError("Title too long")
 
-    if len(desc) > 1000:
+    if len(desc) > PIECE_DESC_LEN_MAX:
         raise ValidationError("Description too long")
 
     img_ext = img.name.split(".")[-1]
@@ -134,8 +138,8 @@ def validate_new_exhibition_form(form_data):
     title = form_data['exhibitionTitle']
     desc = form_data['exhibitionDescription']
 
-    if len(title) > 200:
+    if len(title) > EXHIB_TITLE_LEN_MAX:
         raise ValidationError("Exhibition title too long")
 
-    if len(desc) > 1000:
+    if len(desc) > EXHIB_DESC_LEN_MAX:
         raise ValidationError("Exhibition description too long")

@@ -3,7 +3,7 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.models import AnonymousUser, User
 
 # noinspection PyUnresolvedReferences
-from gallery.views import get_new_gallery_piece
+from gallery.views import get_new_gallery_piece, get_new_exhibition
 
 
 class GalleryPieceFormViewTest(TestCase):
@@ -35,7 +35,7 @@ class GalleryPieceFormViewTest(TestCase):
                               'pieceTitle': title,
                               'pieceDescription': desc,
                               'pieceImage': fp}
-            request = self.factory.post("/gallery/add_gallery_piece", test_post_data)
+            request = self.factory.post("/gallery/add-gallery-piece", test_post_data)
 
             request.user = self.user
 
@@ -51,7 +51,7 @@ class GalleryPieceFormViewTest(TestCase):
                               'pieceTitle': title,
                               'pieceDescription': "woody from toy story",
                               'pieceImage': fp}
-            request = self.factory.post("/gallery/add_gallery_piece", test_post_data)
+            request = self.factory.post("/gallery/add-gallery-piece", test_post_data)
 
             request.user = self.user
 
@@ -68,7 +68,7 @@ class GalleryPieceFormViewTest(TestCase):
                               'pieceTitle': "title",
                               'pieceDescription': desc,
                               'pieceImage': fp}
-            request = self.factory.post("/gallery/add_gallery_piece", test_post_data)
+            request = self.factory.post("/gallery/add-gallery-piece", test_post_data)
 
             request.user = self.user
 
@@ -84,7 +84,7 @@ class GalleryPieceFormViewTest(TestCase):
                               'pieceTitle': "title",
                               'pieceDescription': "desc",
                               'pieceImage': fp}
-            request = self.factory.post("/gallery/add_gallery_piece", test_post_data)
+            request = self.factory.post("/gallery/add-gallery-piece", test_post_data)
 
             request.user = self.user
 
@@ -100,7 +100,7 @@ class GalleryPieceFormViewTest(TestCase):
                               'pieceTitle': "title",
                               'pieceDescription': "desc",
                               'pieceImage': fp}
-            request = self.factory.post("/gallery/add_gallery_piece", test_post_data)
+            request = self.factory.post("/gallery/add-gallery-piece", test_post_data)
 
             request.user = self.user
 
@@ -117,6 +117,58 @@ class ExhibitionFormViewTest(TestCase):
         self.user = User.objects.create_user(
             username="jacob", email="jacob@…", password="top_secret"
         )
+        self.anonUser = AnonymousUser()
+        self.good_title = 'x' * 200
+        self.good_desc = 'x' * 1000
 
+    def test_create_exhibition(self):
+        test_post_data = {'placeholder': "PLACEHOLDER",
+                          'exhibitionTitle': self.good_title,
+                          'exhibitionDescription': self.good_desc}
 
+        request = self.factory.post("/gallery/add-exhibition", test_post_data)
+        request.user = self.user
 
+        response = get_new_exhibition(request)
+
+        self.assertEqual(302, response.status_code)
+
+    def test_create_exhibition_anonymous_user(self):
+        test_post_data = {'placeholder': "PLACEHOLDER",
+                          'exhibitionTitle': self.good_title,
+                          'exhibitionDescription': self.good_desc}
+
+        request = self.factory.post("/gallery/add-exhibition", test_post_data)
+        request.user = self.anonUser
+
+        response = get_new_exhibition(request)
+
+        self.assertEqual(405, response.status_code)
+
+    def test_create_exhibition_title_too_long(self):
+        long_title = 'x' * 201
+
+        test_post_data = {'placeholder': "PLACEHOLDER",
+                          'exhibitionTitle': long_title,
+                          'exhibitionDescription': self.good_desc}
+
+        request = self.factory.post("/gallery/add-exhibition", test_post_data)
+        request.user = self.user
+
+        response = get_new_exhibition(request)
+
+        self.assertEqual(400, response.status_code)
+
+    def test_create_exhibition_description_too_long(self):
+        long_desc = 'x' * 1001
+
+        test_post_data = {'placeholder': "PLACEHOLDER",
+                          'exhibitionTitle': self.good_title,
+                          'exhibitionDescription': long_desc}
+
+        request = self.factory.post("/gallery/add-exhibition", test_post_data)
+        request.user = self.user
+
+        response = get_new_exhibition(request)
+
+        self.assertEqual(400, response.status_code)
