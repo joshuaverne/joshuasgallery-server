@@ -47,7 +47,11 @@ def get_new_gallery_piece(request):
         r_files = request.FILES
 
         # check whether it's valid:
-        if validate_new_gallery_piece_form(dict(list(r_post.items())[1:]), r_files):
+        try:
+            validate_new_gallery_piece_form(dict(list(r_post.items())[1:]), r_files)
+        except ValidationError:
+            return HttpResponseBadRequest("Form data invalid")
+        else:
             piece_title = r_post['pieceTitle']
             piece_desc = r_post['pieceDescription']
             piece_image = r_files['pieceImage']
