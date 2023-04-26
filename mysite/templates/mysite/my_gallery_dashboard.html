@@ -15,9 +15,30 @@
 <div class="container py-5">
     <p>Welcome to the gallery dashboard!</p>
     <p>Pieces: {% for piece in pieces %} {{piece.title}}, {% endfor %}</p>
+    {% for piece in pieces %}
+    <div class="card" style="width: 18rem;">
+        <img src="{{ piece.image.url }}" class="card-img-top" alt="...">
+        <div class="card-body">
+            <h5 class="card-title">{{piece.title}}</h5>
+            <p class="card-text">{{piece.description}}</p>
+            <a href="#" class="btn btn-primary">Go somewhere</a>
+        </div>
+    </div>
+    {% endfor %}
     <p>Exhibitions: {% for exhib in exhibs %} {{exhib.title}}, {% endfor %}</p>
     {% include 'mysite/forms/new_exhibition_form.html' %}
     {% include 'mysite/forms/new_gallery_piece_form.html' %}
 </div>
+
+<template id="piece-card">
+    <div class="card" style="width: 18rem;">
+        <img src='#' class="card-img-top" alt="...">
+        <div class="card-body">
+            <h5 class="card-title"></h5>
+            <p class="card-text"></p>
+            <a href="#" class="btn btn-primary">Go somewhere</a>
+        </div>
+    </div>
+</template>
 
 {% endblock %}

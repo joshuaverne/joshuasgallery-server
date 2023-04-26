@@ -157,7 +157,7 @@ else:
 
 # Media file storage location
 if ENV == ENV_LOCAL:
-    MEDIA_ROOT = os.path.join(BASE_DIR, '../jg-media-files/')
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
     MEDIA_URL = '/media/'
 elif ENV == ENV_DEV:
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
