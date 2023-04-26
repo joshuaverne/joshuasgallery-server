@@ -30,6 +30,17 @@ def index(request):
                   context={'pieces': pieces_list, 'exhibs': exhibs_list})
 
 
+def pieces_list_view(request):
+    if not request.user.is_authenticated:
+        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED)
+
+    pieces_list = GalleryPiece.objects.filter(user=request.user)
+
+    return render(request=request,
+                  template_name="mysite/gallery_pieces_list.html",
+                  context={'pieces': pieces_list})
+
+
 def exhibition_detail(request, exhibition_id):
     return HttpResponse("You're looking at exhibition %s." % exhibition_id)
 

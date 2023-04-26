@@ -1,0 +1,29 @@
+{% extends "mysite/header.html" %}
+
+{% block content %}
+
+{# Load the tag library #}
+{% load django_bootstrap5 %}
+
+{# Load CSS and JavaScript #}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+{# Display django.contrib.messages as Bootstrap alerts #}
+{% bootstrap_messages %}
+
+<div class="container py-5">
+  <p>Pieces (titles): {% for piece in pieces %} {{piece.title}}, {% endfor %}</p>
+  {% for piece in pieces %}
+  <div class="card" style="width: 18rem;">
+    <img src="{{ piece.image.url }}" class="card-img-top" alt="...">
+    <div class="card-body">
+      <h5 class="card-title">{{piece.title}}</h5>
+      <p class="card-text">{{piece.description}}</p>
+      <a href="#" class="btn btn-primary">Go somewhere</a>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% endblock %}

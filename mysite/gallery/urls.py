@@ -5,6 +5,8 @@ from . import views
 urlpatterns = [
     # ex: /gallery/
     path('', views.index, name='index'),
+    # ex: /gallery/pieces
+    path('pieces', views.pieces_list_view, name='pieces_list_view'),
     # ex: /gallery/exhib/5
     path('exhib/<int:exhibition_id>', views.exhibition_detail, name='exhibition_detail'),
     # ex: /gallery/piece/5
