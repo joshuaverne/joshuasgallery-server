@@ -7,6 +7,8 @@ urlpatterns = [
     path('', views.index, name='index'),
     # ex: /gallery/pieces
     path('pieces', views.pieces_list_view, name='pieces_list_view'),
+    # ex: /gallery/exhibitions
+    path('exhibitions', views.exhibitions_list_view, name='exhibitions_list_view'),
     # ex: /gallery/exhib/5
     path('exhib/<int:exhibition_id>', views.exhibition_detail, name='exhibition_detail'),
     # ex: /gallery/piece/5
