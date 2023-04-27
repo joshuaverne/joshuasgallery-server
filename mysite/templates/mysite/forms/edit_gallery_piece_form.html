@@ -1,17 +1,25 @@
-<form action="edit-gallery-piece" enctype="multipart/form-data" method="post">
+<form action="submitedit" enctype="multipart/form-data" method="post">
   {% csrf_token %}
   <div class="form-group">
-    <label for="inputTitle">Title<span style="color: red;">*</span></label>
-    <input class="form-control" id="inputTitle" name="pieceTitle" placeholder="Enter piece title" required>
+    <label for="inputTitle">Title</label>
+    <input class="form-control" id="inputTitle" name="pieceTitle"
+           placeholder="Enter piece title" value="{{ piece.title }}" required>
   </div>
   <div class="form-group">
     <label for="inputDescription">Description</label>
-    <textarea class="form-control" id="inputDescription" name="pieceDescription" placeholder="Enter piece description"></textarea>
+    <textarea class="form-control" id="inputDescription" name="pieceDescription"
+              placeholder="Enter piece description">{{ piece.description }}</textarea>
   </div>
   <div class="form-group">
-    <label for="inputImage">Source Image<span style="color: red;">*</span></label>
-    <input class="form-control" id="inputImage" type="file" name="pieceImage" onchange="preview()" required>
-    <img id="frame" src="" class="img-fluid">
+    <label for="inputImage">Source Image</label>
+    <input class="form-control" id="inputImage" type="file" name="pieceImage" onchange="preview()">
+    <img id="frame" src="{{ piece.image.url }}" class="img-fluid">
   </div>
   <input type="submit" value="Save Changes">
 </form>
+
+<script>
+  function preview() {
+    frame.src = URL.createObjectURL(event.target.files[0]);
+  }
+</script>

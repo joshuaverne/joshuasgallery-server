@@ -52,9 +52,18 @@ def piece_detail(request, piece_id):
                   context={'piece': piece})
 
 
-def piece_edit(request, piece_id):
-    # TODO
-    return HttpResponse("You are now editing a piece!")
+def piece_detail_edit(request, piece_id):
+    if not request.user.is_authenticated:
+        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED)
+
+    piece = GalleryPiece.objects.get(id=piece_id)
+
+    if not piece.user == request.user:
+        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED)
+
+    return render(request=request,
+                  template_name="mysite/gallery_piece_detail_edit.html",
+                  context={'piece': piece})
 
 
 def exhibitions_list_view(request):
@@ -109,6 +118,99 @@ def get_new_gallery_piece(request):
     # if a GET (or any other method) we'll redirect to the gallery page
     else:
         return HttpResponseRedirect("/gallery")
+
+
+def edit_gallery_piece(request, piece_id):
+    if not request.user.is_authenticated:
+        return HttpResponseNotAllowed("You must be logged in to do that.")
+
+    piece = GalleryPiece.objects.get(id=piece_id)
+
+    if not piece.user == request.user:
+        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED)
+
+    if request.method == 'POST':
+        r_post = request.POST
+        r_files = request.FILES
+
+        if 'pieceTitle' not in r_post or 'pieceDescription' not in r_post:
+            return HttpResponseBadRequest("Required fields not in post data")
+
+        new_title = r_post['pieceTitle']
+        new_desc = r_post['pieceDescription']
+
+        title_c = False
+        desc_c = False
+        img_c = False
+
+        if new_title != piece.title:
+            title_c = True
+        if new_desc != piece.description:
+            desc_c = True
+        if 'pieceImage' in r_files:
+            img_c = True
+            new_image = r_files['pieceImage']
+
+        if not (title_c or desc_c or img_c):
+            messages.error(request, "No changes were made.")
+            return HttpResponseRedirect("/gallery/pieces/" + str(piece_id) + "/edit")
+
+        if title_c:
+            try:
+                validate_gallery_piece_title(new_title)
+            except ValidationError:
+                return HttpResponseBadRequest("Invalid title")
+
+        if desc_c:
+            try:
+                validate_gallery_piece_description(new_desc)
+            except ValidationError:
+                return HttpResponseBadRequest("Invalid description")
+
+        if img_c:
+            try:
+                validate_gallery_piece_image(new_image)
+            except ValidationError:
+                return HttpResponseBadRequest("Invalid image")
+
+        if title_c:
+            piece.title = new_title
+        if desc_c:
+            piece.description = new_desc
+        if img_c:
+            piece.image = new_image
+
+        piece.save()
+
+        messages.success(request, "Changes successfully applied")
+
+        return HttpResponseRedirect("/gallery/pieces/" + str(piece_id))
+
+    # if a GET (or any other method) we'll redirect to the piece edit page
+    else:
+        return HttpResponseRedirect("/gallery/pieces/" + str(piece_id) + "/edit")
+
+
+def validate_gallery_piece_title(t):
+    if len(t) > PIECE_TITLE_LEN_MAX:
+        raise ValidationError("Title too long")
+
+    if len(t) < 1:
+        raise ValidationError("Title cannot be blank")
+
+
+def validate_gallery_piece_description(d):
+    if len(d) > PIECE_DESC_LEN_MAX:
+        raise ValidationError("Description too long")
+
+
+def validate_gallery_piece_image(img):
+    img_ext = img.name.split(".")[-1]
+    if img_ext not in ALLOWED_IMG_EXTENSIONS:
+        raise ValidationError("Invalid file format: " + img_ext)
+
+    if img.size > MAX_IMG_SIZE_BYTES:
+        raise ValidationError("File too large")
 
 
 def validate_new_gallery_piece_form(form_data, file_data):
