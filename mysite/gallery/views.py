@@ -41,6 +41,22 @@ def pieces_list_view(request):
                   context={'pieces': pieces_list})
 
 
+def piece_detail(request, piece_id):
+    if not request.user.is_authenticated:
+        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED)
+
+    piece = GalleryPiece.objects.get(id=piece_id)
+
+    return render(request=request,
+                  template_name="mysite/gallery_piece_detail.html",
+                  context={'piece': piece})
+
+
+def piece_edit(request, piece_id):
+    # TODO
+    return HttpResponse("You are now editing a piece!")
+
+
 def exhibitions_list_view(request):
     if not request.user.is_authenticated:
         return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED)
@@ -54,10 +70,6 @@ def exhibitions_list_view(request):
 
 def exhibition_detail(request, exhibition_id):
     return HttpResponse("You're looking at exhibition %s." % exhibition_id)
-
-
-def piece_detail(request, piece_id):
-    return HttpResponse("You're looking at piece %s." % piece_id)
 
 
 def get_new_gallery_piece(request):

@@ -1,0 +1,17 @@
+<form action="edit-gallery-piece" enctype="multipart/form-data" method="post">
+  {% csrf_token %}
+  <div class="form-group">
+    <label for="inputTitle">Title<span style="color: red;">*</span></label>
+    <input class="form-control" id="inputTitle" name="pieceTitle" placeholder="Enter piece title" required>
+  </div>
+  <div class="form-group">
+    <label for="inputDescription">Description</label>
+    <textarea class="form-control" id="inputDescription" name="pieceDescription" placeholder="Enter piece description"></textarea>
+  </div>
+  <div class="form-group">
+    <label for="inputImage">Source Image<span style="color: red;">*</span></label>
+    <input class="form-control" id="inputImage" type="file" name="pieceImage" onchange="preview()" required>
+    <img id="frame" src="" class="img-fluid">
+  </div>
+  <input type="submit" value="Save Changes">
+</form>

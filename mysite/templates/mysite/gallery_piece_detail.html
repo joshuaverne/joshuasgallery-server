@@ -1,0 +1,22 @@
+{% extends "mysite/header.html" %}
+
+{% block content %}
+
+{# Load the tag library #}
+{% load django_bootstrap5 %}
+
+{# Load CSS and JavaScript #}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+{# Display django.contrib.messages as Bootstrap alerts #}
+{% bootstrap_messages %}
+
+<div class="container py-5">
+  <h3>{{ piece.title }}</h3>
+  <p>{{ piece.description }}</p>
+  <img src="{{ piece.image.url }}">
+  <p>This is the detail page for piece {{piece.title}}, id {{piece.id}}</p>
+</div>
+
+{% endblock %}
