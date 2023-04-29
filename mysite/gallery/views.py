@@ -52,20 +52,6 @@ def piece_detail(request, piece_id):
                   context={'piece': piece})
 
 
-def piece_detail_edit(request, piece_id):
-    if not request.user.is_authenticated:
-        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED)
-
-    piece = GalleryPiece.objects.get(id=piece_id)
-
-    if not piece.user == request.user:
-        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED)
-
-    return render(request=request,
-                  template_name="mysite/gallery_piece_detail_edit.html",
-                  context={'piece': piece})
-
-
 def exhibitions_list_view(request):
     if not request.user.is_authenticated:
         return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED)
@@ -129,71 +115,94 @@ def edit_gallery_piece(request, piece_id):
     if not piece.user == request.user:
         return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED)
 
-    if request.method == 'POST':
-        r_post = request.POST
-        r_files = request.FILES
+    actual_title = piece.title
+    title = piece.title
+    desc = piece.description
+    img = piece.image
 
-        if 'pieceTitle' not in r_post or 'pieceDescription' not in r_post:
+    title_error = ""
+    desc_error = ""
+    img_error = ""
+
+    if request.method == 'POST':
+        if 'pieceTitle' not in request.POST or 'pieceDescription' not in request.POST:
             return HttpResponseBadRequest("Required fields not in post data")
 
-        new_title = r_post['pieceTitle']
-        new_desc = r_post['pieceDescription']
+        title = request.POST['pieceTitle']
+        desc = request.POST['pieceDescription']
 
         title_c = False
         desc_c = False
         img_c = False
 
-        if new_title != piece.title:
+        if title != piece.title:
             title_c = True
-        if new_desc != piece.description:
+        if desc != piece.description:
             desc_c = True
-        if 'pieceImage' in r_files:
+        if 'pieceImage' in request.FILES:
             img_c = True
-            new_image = r_files['pieceImage']
+            img = request.FILES['pieceImage']
 
         if not (title_c or desc_c or img_c):
             messages.error(request, "No changes were made.")
             return HttpResponseRedirect("/gallery/pieces/" + str(piece_id) + "/edit")
 
-        if title_c:
-            try:
-                validate_gallery_piece_title(new_title)
-            except ValidationError:
-                return HttpResponseBadRequest("Invalid title")
-
-        if desc_c:
-            try:
-                validate_gallery_piece_description(new_desc)
-            except ValidationError:
-                return HttpResponseBadRequest("Invalid description")
-
-        if img_c:
-            try:
-                validate_gallery_piece_image(new_image)
-            except ValidationError:
-                return HttpResponseBadRequest("Invalid image")
+        save = True
 
         if title_c:
-            piece.title = new_title
+            try:
+                validate_gallery_piece_title(title)
+            except ValidationError as e:
+                title_error = e.message
+                save = False
         if desc_c:
-            piece.description = new_desc
+            try:
+                validate_gallery_piece_description(desc)
+            except ValidationError as e:
+                desc_error = e.message
+                save = False
         if img_c:
-            piece.image = new_image
+            try:
+                validate_gallery_piece_image(img)
+            except ValidationError as e:
+                img_error = e.message
+                save = False
 
-        piece.save()
+        if save:
+            piece.title = title
+            piece.description = desc
+            piece.image = img
+            piece.save()
+            messages.success(request, "Changes successfully applied")
 
-        messages.success(request, "Changes successfully applied")
+            actual_title = title
+            return render(request=request,
+                          template_name="mysite/gallery_piece_detail_edit.html",
+                          context={'actual_title': actual_title,
+                                   'piece_title': title,
+                                   'piece_desc': desc,
+                                   'piece_img': img,
+                                   'title_error': title_error,
+                                   'desc_error': desc_error,
+                                   'img_error': img_error})
 
-        return HttpResponseRedirect("/gallery/pieces/" + str(piece_id))
+        else:
+            messages.error(request, "Invalid Piece info. Please correct the errors below.")
 
-    # if a GET (or any other method) we'll redirect to the piece edit page
-    else:
-        return HttpResponseRedirect("/gallery/pieces/" + str(piece_id) + "/edit")
+    return render(request=request,
+                  template_name="mysite/gallery_piece_detail_edit.html",
+                  context={'actual_title': actual_title,
+                           'piece_title': title,
+                           'piece_desc': desc,
+                           'piece_img': img,
+                           'title_error': title_error,
+                           'desc_error': desc_error,
+                           'img_error': img_error})
 
 
 def validate_gallery_piece_title(t):
     if len(t) > PIECE_TITLE_LEN_MAX:
-        raise ValidationError("Title too long")
+        raise ValidationError("Title is too long (Max 200 characters)")
 
     if len(t) < 1:
         raise ValidationError("Title cannot be blank")
@@ -201,13 +210,13 @@ def validate_gallery_piece_title(t):
 
 def validate_gallery_piece_description(d):
     if len(d) > PIECE_DESC_LEN_MAX:
-        raise ValidationError("Description too long")
+        raise ValidationError("Description is too long (Max 1000 characters)")
 
 
 def validate_gallery_piece_image(img):
     img_ext = img.name.split(".")[-1]
     if img_ext not in ALLOWED_IMG_EXTENSIONS:
-        raise ValidationError("Invalid file format: " + img_ext)
+        raise ValidationError("Invalid file format")
 
     if img.size > MAX_IMG_SIZE_BYTES:
         raise ValidationError("File too large")

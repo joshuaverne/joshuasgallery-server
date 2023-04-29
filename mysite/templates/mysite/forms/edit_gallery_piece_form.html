@@ -3,17 +3,20 @@
   <div class="form-group">
     <label for="inputTitle">Title</label>
     <input class="form-control" id="inputTitle" name="pieceTitle"
-           placeholder="Enter piece title" value="{{ piece.title }}" required>
+           placeholder="Enter piece title" value="{{ piece_title }}" required>
+    <div style="color: red">{{ title_error }}</div>
   </div>
   <div class="form-group">
     <label for="inputDescription">Description</label>
     <textarea class="form-control" id="inputDescription" name="pieceDescription"
-              placeholder="Enter piece description">{{ piece.description }}</textarea>
+              placeholder="Enter piece description">{{ piece_desc }}</textarea>
+    <div style="color: red">{{ desc_error }}</div>
   </div>
   <div class="form-group">
     <label for="inputImage">Source Image</label>
     <input class="form-control" id="inputImage" type="file" name="pieceImage" onchange="preview()">
-    <img id="frame" src="{{ piece.image.url }}" class="img-fluid">
+    <img id="frame" src="{{ piece_img.url }}" class="img-fluid">
+    <div style="color: red">{{ img_error }}</div>
   </div>
   <input type="submit" value="Save Changes">
 </form>

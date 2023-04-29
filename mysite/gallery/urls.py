@@ -13,7 +13,7 @@ urlpatterns = [
     path('pieces/<int:piece_id>', views.piece_detail, name='piece_detail'),
 
     # ex: /gallery/pieces/5/edit
-    path('pieces/<int:piece_id>/edit', views.piece_detail_edit, name='piece_edit'),
+    path('pieces/<int:piece_id>/edit', views.edit_gallery_piece, name='piece_edit'),
 
     # ex: /gallery/pieces/5/edit/submit
     path('pieces/<int:piece_id>/submitedit', views.edit_gallery_piece, name='edit_gallery_piece'),
