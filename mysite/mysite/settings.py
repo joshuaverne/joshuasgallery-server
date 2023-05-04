@@ -125,16 +125,16 @@ if ENV == ENV_LOCAL:
         }
     }
 elif ENV == ENV_DEV:
-    with open(os.path.join(BASE_DIR, '../config/database-jg-dev-pw.txt')) as f:
+    with open(os.path.join(BASE_DIR, '../config/jg-dev-freetier_pw.txt')) as f:
         DB_PW = f.read().strip()
     DATABASES = {
         'default': {
             # this DB has been created in the RDS instance
-            'NAME': 'jgdev',
+            'NAME': 'jg-dev',
             'ENGINE': 'django.db.backends.mysql',
             'USER': 'admin',
             'PASSWORD': DB_PW,
-            'HOST': 'database-jg-dev-instance-1.c6ytnqpjyedh.us-east-1.rds.amazonaws.com',
+            'HOST': 'jg-dev-freetier.c6ytnqpjyedh.us-east-1.rds.amazonaws.com',
             'POST': '3306',
         }
     }
