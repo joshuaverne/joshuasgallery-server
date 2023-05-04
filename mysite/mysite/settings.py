@@ -130,7 +130,7 @@ elif ENV == ENV_DEV:
     DATABASES = {
         'default': {
             # this DB has been created in the RDS instance
-            'NAME': 'jg-dev',
+            'NAME': 'jg_dev',
             'ENGINE': 'django.db.backends.mysql',
             'USER': 'admin',
             'PASSWORD': DB_PW,
