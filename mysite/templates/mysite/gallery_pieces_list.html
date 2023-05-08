@@ -12,12 +12,25 @@
 {# Display django.contrib.messages as Bootstrap alerts #}
 {% bootstrap_messages %}
 
+<style>
+  .piece-link-hover-effect:hover {
+    color: red;
+  }
+  .piece-link {
+    color: black;
+  }
+</style>
+
 <div class="container py-5">
   <div class="list-group">
+    <li class="list-group-item d-flex flex-row border-dark bg-dark">
+      <div class="h3 my-auto text-white">Pieces</div>
+    </li>
     {% for piece in pieces %}
-      <li class="list-group-item d-flex justify-content-between">
-        <a href="/gallery/pieces/{{ piece.id }}" style="color: black">{{piece.title}}</a>
-        <a href="/gallery/pieces/{{ piece.id }}/edit" class="btn btn-outline-secondary">Edit</a>
+      <li class="list-group-item d-flex justify-content-start bg-white border-dark">
+        <a href="/gallery/pieces/{{ piece.id }}/"
+           class="my-auto fw-bold text-decoration-none piece-link-hover-effect piece-link me-auto me-md-2">{{piece.title}}</a>
+        <a href="/gallery/pieces/{{ piece.id }}/edit/" class="btn btn-outline-dark">Edit</a>
       </li>
     {% endfor %}
   </div>
