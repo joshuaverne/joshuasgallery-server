@@ -28,3 +28,6 @@ urlpatterns = [
     path('login/', views.login_request, name="login"),
     path('logout/', views.logout_request, name="logout")
 ]
+
+if settings.ENV == settings.ENV_LOCAL:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
