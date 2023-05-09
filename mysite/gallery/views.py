@@ -59,7 +59,7 @@ def exhibitions_list_view(request):
     exhibs_list = Exhibition.objects.filter(user=request.user)
 
     return render(request=request,
-                  template_name="mysite/gallery_exhibitions_list.html",
+                  template_name="mysite/exhibitions_list.html",
                   context={'exhibs': exhibs_list})
 
 
@@ -140,7 +140,7 @@ def new_gallery_piece(request):
 
             return HttpResponseRedirect("/gallery/pieces")
 
-    # if a GET (or any other method) we'll redirect to the gallery page
+    # if a GET (or any other method) we'll render the new gallery piece form
     else:
         return render(request=request,
                       template_name="mysite/gallery_piece_new.html")
@@ -307,7 +307,7 @@ def validate_new_gallery_piece_form(form_data, file_data):
     return True
 
 
-def get_new_exhibition(request):
+def new_exhibition(request):
     if not request.user.is_authenticated:
         return HttpResponseNotAllowed("You must be logged in to do that.")
 
@@ -330,12 +330,15 @@ def get_new_exhibition(request):
 
             new_exhibition.save()
 
-            # redirect to a new URL:
-            return HttpResponseRedirect("/gallery")
+            messages.success(request, "Exhibition created successfully.")
 
-    # if a GET (or any other method) we'll redirect to the gallery page
+            # redirect to a new URL:
+            return HttpResponseRedirect("/gallery/exhibitions")
+
+    # if a GET (or any other method) we'll render the new exhibition form
     else:
-        return HttpResponseRedirect("/gallery")
+        return render(request=request,
+                      template_name="mysite/exhibition_new.html")
 
 
 def validate_new_exhibition_form(form_data):

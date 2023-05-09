@@ -24,12 +24,12 @@ urlpatterns = [
     # ex: /gallery/exhibitions
     path('exhibitions/', views.exhibitions_list_view, name='exhibitions_list_view'),
 
-    # ex: /gallery/exhib/5
-    path('exhib/<int:exhibition_id>/', views.exhibition_detail, name='exhibition_detail'),
+    # ex: /gallery/exhibitions/new
+    path('exhibitions/new/', views.new_exhibition, name='exhibition_new'),
+
+    # ex: /gallery/exhibitions/5
+    path('exhibitions/<int:exhibition_id>/', views.exhibition_detail, name='exhibition_detail'),
 
     # ex: /gallery/add-gallery-piece
     path('add-gallery-piece/', views.get_new_gallery_piece, name='get_new_gallery_piece'),
-
-    # ex: /gallery/add-exhibition
-    path('add-exhibition/', views.get_new_exhibition, name='get_new_exhibition')
 ]
