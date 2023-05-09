@@ -1,4 +1,4 @@
-import http, logging
+import http
 
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed, HttpResponseBadRequest
@@ -15,8 +15,6 @@ PIECE_DESC_LEN_MAX = 1000
 EXHIB_TITLE_LEN_MAX = 200
 EXHIB_DESC_LEN_MAX = 1000
 MAX_IMG_SIZE_BYTES = 10000000
-
-logger = logging.getLogger(__name__)
 
 
 def index(request):
