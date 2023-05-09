@@ -1,0 +1,35 @@
+{% extends "mysite/header.html" %}
+
+{% block content %}
+
+{# Load the tag library #}
+{% load django_bootstrap5 %}
+
+{# Load CSS and JavaScript #}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+{# Display django.contrib.messages as Bootstrap alerts #}
+{% bootstrap_messages %}
+
+<div class="container py-5">
+  <div class="list-group">
+    <li class="list-group-item d-flex flex-row border-dark bg-dark">
+      <div class="h3 my-auto text-white me-auto">{{ exhib.title }}</div>
+      <a href="/gallery/exhibitions/{{ exhib.id }}/edit/" class="btn btn-outline-light me-2">Edit</a>
+      <a href="/gallery/exhibitions/{{ exhib.id }}/delete/" class="btn btn-outline-danger">Delete</a>
+    </li>
+    <li class="list-group-item bg-white border-dark">
+      <div class="container">
+        <div class="row">
+          <div class="col">
+            <h3>Description</h3>
+            <p>{{ exhib.description }}</p>
+          </div>
+        </div>
+      </div>
+    </li>
+  </div>
+</div>
+
+{% endblock %}

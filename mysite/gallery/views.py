@@ -64,7 +64,17 @@ def exhibitions_list_view(request):
 
 
 def exhibition_detail(request, exhibition_id):
-    return HttpResponse("You're looking at exhibition %s." % exhibition_id)
+    if not request.user.is_authenticated:
+        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED)
+
+    exhib = Exhibition.objects.get(id=exhibition_id)
+
+    if not exhib.user == request.user:
+        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED)
+
+    return render(request=request,
+                  template_name='mysite/exhibition_detail.html',
+                  context={'exhib': exhib})
 
 
 def get_new_gallery_piece(request):
