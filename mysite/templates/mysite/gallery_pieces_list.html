@@ -27,12 +27,16 @@
       <div class="h3 my-auto text-white me-auto me-md-3">Pieces</div>
       <a href="/gallery/pieces/new/" class="btn btn-outline-light">New Piece</a>
     </li>
-    {% for piece in pieces %}
-      <li class="list-group-item d-flex justify-content-start bg-white border-dark">
-        <a href="/gallery/pieces/{{ piece.id }}/"
-           class="my-auto fw-bold text-decoration-none piece-link-hover-effect piece-link me-auto me-md-2">{{ piece.title }}</a>
-      </li>
-    {% endfor %}
+    {% if pieces %}
+      {% for piece in pieces %}
+        <li class="list-group-item d-flex justify-content-start bg-white border-dark">
+          <a href="/gallery/pieces/{{ piece.id }}/"
+             class="my-auto fw-bold text-decoration-none piece-link-hover-effect piece-link me-auto me-md-2">{{ piece.title }}</a>
+        </li>
+      {% endfor %}
+    {% else %}
+      <li class="list-group-item d-flex justify-content-start bg-white border-dark">No pieces to display.</li>
+    {% endif %}
   </div>
 </div>
 
