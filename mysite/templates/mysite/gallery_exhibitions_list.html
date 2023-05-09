@@ -12,8 +12,32 @@
 {# Display django.contrib.messages as Bootstrap alerts #}
 {% bootstrap_messages %}
 
+<style>
+  .exhib-link-hover-effect:hover {
+    color: red;
+  }
+  .exhib-link {
+    color: black;
+  }
+</style>
+
 <div class="container py-5">
-  <p>Exhibitions (titles): {% for exhib in exhibs %} {{exhib.title}}, {% endfor %}</p>
+  <div class="list-group">
+    <li class="list-group-item d-flex flex-row border-dark bg-dark">
+      <div class="h3 my-auto text-white me-auto me-md-3">Exhibitions</div>
+      <a href="/gallery/exhibitions/new/" class="btn btn-outline-light">New Exhibition</a>
+    </li>
+    {% if exhibs %}
+    {% for exhib in exhibs %}
+    <li class="list-group-item d-flex justify-content-start bg-white border-dark">
+      <a href="/gallery/exhibitions/{{ exhib.id }}/"
+         class="my-auto fw-bold text-decoration-none exhib-link-hover-effect exhib-link me-auto me-md-2">{{ exhib.title }}</a>
+    </li>
+    {% endfor %}
+    {% else %}
+    <li class="list-group-item d-flex justify-content-start bg-white border-dark">No exhibitions to display.</li>
+    {% endif %}
+  </div>
 </div>
 
 {% endblock %}
