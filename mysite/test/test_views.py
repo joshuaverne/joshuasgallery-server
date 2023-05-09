@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.models import AnonymousUser, User
 
 # noinspection PyUnresolvedReferences
-from gallery.views import get_new_gallery_piece, get_new_exhibition
+from gallery.views import new_gallery_piece, new_exhibition
 
 
 @contextlib.contextmanager
@@ -39,13 +39,13 @@ class GalleryPieceFormViewTest(TestCase):
         self.good_desc = 'x' * 1000
 
     def test_get_view_redirect(self):
-        request = self.factory.get("/gallery/get_new_gallery_piece")
+        request = self.factory.get("/gallery/pieces/new")
 
         request.user = self.user
 
-        response = get_new_gallery_piece(request)
+        response = new_gallery_piece(request)
 
-        self.assertEqual(302, response.status_code)
+        self.assertEqual(200, response.status_code)
 
     def test_create_piece(self):
         with open("test/images/woody.jpg", "rb") as fp:
@@ -53,12 +53,12 @@ class GalleryPieceFormViewTest(TestCase):
                               'pieceTitle': self.good_title,
                               'pieceDescription': self.good_desc,
                               'pieceImage': fp}
-            request = self.factory.post("/gallery/add-gallery-piece", test_post_data)
+            request = self.factory.post("/gallery/pieces/new", test_post_data)
 
             request.user = self.user
 
             with middleware(request):
-                response = get_new_gallery_piece(request)
+                response = new_gallery_piece(request)
 
         self.assertEqual(302, response.status_code)
 
@@ -68,11 +68,11 @@ class GalleryPieceFormViewTest(TestCase):
                               'pieceTitle': self.good_title,
                               'pieceDescription': self.good_desc,
                               'pieceImage': fp}
-            request = self.factory.post("/gallery/add-gallery-piece", test_post_data)
+            request = self.factory.post("/gallery/pieces/new", test_post_data)
 
             request.user = self.anonUser
 
-            response = get_new_gallery_piece(request)
+            response = new_gallery_piece(request)
 
         self.assertEqual(405, response.status_code)
 
@@ -84,11 +84,11 @@ class GalleryPieceFormViewTest(TestCase):
                               'pieceTitle': title,
                               'pieceDescription': self.good_desc,
                               'pieceImage': fp}
-            request = self.factory.post("/gallery/add-gallery-piece", test_post_data)
+            request = self.factory.post("/gallery/pieces/new", test_post_data)
 
             request.user = self.user
 
-            response = get_new_gallery_piece(request)
+            response = new_gallery_piece(request)
 
         self.assertEqual(400, response.status_code)
 
@@ -100,11 +100,11 @@ class GalleryPieceFormViewTest(TestCase):
                               'pieceTitle': self.good_title,
                               'pieceDescription': desc,
                               'pieceImage': fp}
-            request = self.factory.post("/gallery/add-gallery-piece", test_post_data)
+            request = self.factory.post("/gallery/pieces/new", test_post_data)
 
             request.user = self.user
 
-            response = get_new_gallery_piece(request)
+            response = new_gallery_piece(request)
 
         self.assertEqual(400, response.status_code)
 
@@ -114,11 +114,11 @@ class GalleryPieceFormViewTest(TestCase):
                               'pieceTitle': self.good_title,
                               'pieceDescription': self.good_desc,
                               'pieceImage': fp}
-            request = self.factory.post("/gallery/add-gallery-piece", test_post_data)
+            request = self.factory.post("/gallery/pieces/new", test_post_data)
 
             request.user = self.user
 
-            response = get_new_gallery_piece(request)
+            response = new_gallery_piece(request)
 
         self.assertEqual(400, response.status_code)
 
@@ -129,11 +129,11 @@ class GalleryPieceFormViewTest(TestCase):
                               'pieceDescription': self.good_desc,
                               'pieceImage': fp}
 
-            request = self.factory.post("/gallery/add-gallery-piece", test_post_data)
+            request = self.factory.post("/gallery/pieces/new", test_post_data)
 
             request.user = self.user
 
-            response = get_new_gallery_piece(request)
+            response = new_gallery_piece(request)
 
         self.assertEqual(400, response.status_code)
 
@@ -154,10 +154,11 @@ class ExhibitionFormViewTest(TestCase):
                           'exhibitionTitle': self.good_title,
                           'exhibitionDescription': self.good_desc}
 
-        request = self.factory.post("/gallery/add-exhibition", test_post_data)
+        request = self.factory.post("/gallery/exhibitions/new", test_post_data)
         request.user = self.user
 
-        response = get_new_exhibition(request)
+        with middleware(request):
+            response = new_exhibition(request)
 
         self.assertEqual(302, response.status_code)
 
@@ -166,10 +167,11 @@ class ExhibitionFormViewTest(TestCase):
                           'exhibitionTitle': self.good_title,
                           'exhibitionDescription': self.good_desc}
 
-        request = self.factory.post("/gallery/add-exhibition", test_post_data)
+        request = self.factory.post("/gallery/exhibitions/new", test_post_data)
         request.user = self.anonUser
 
-        response = get_new_exhibition(request)
+        with middleware(request):
+            response = new_exhibition(request)
 
         self.assertEqual(405, response.status_code)
 
@@ -180,10 +182,11 @@ class ExhibitionFormViewTest(TestCase):
                           'exhibitionTitle': long_title,
                           'exhibitionDescription': self.good_desc}
 
-        request = self.factory.post("/gallery/add-exhibition", test_post_data)
+        request = self.factory.post("/gallery/exhibitions/new", test_post_data)
         request.user = self.user
 
-        response = get_new_exhibition(request)
+        with middleware(request):
+            response = new_exhibition(request)
 
         self.assertEqual(400, response.status_code)
 
@@ -194,9 +197,10 @@ class ExhibitionFormViewTest(TestCase):
                           'exhibitionTitle': self.good_title,
                           'exhibitionDescription': long_desc}
 
-        request = self.factory.post("/gallery/add-exhibition", test_post_data)
+        request = self.factory.post("/gallery/exhibitions/new", test_post_data)
         request.user = self.user
 
-        response = get_new_exhibition(request)
+        with middleware(request):
+            response = new_exhibition(request)
 
         self.assertEqual(400, response.status_code)
