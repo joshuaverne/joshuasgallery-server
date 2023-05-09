@@ -12,11 +12,11 @@ urlpatterns = [
     # ex: /gallery/pieces/5
     path('pieces/<int:piece_id>/', views.piece_detail, name='piece_detail'),
 
+    # ec: /gallery/pieces/new
+    path('pieces/new/', views.new_gallery_piece, name='piece_new'),
+
     # ex: /gallery/pieces/5/edit
     path('pieces/<int:piece_id>/edit/', views.edit_gallery_piece, name='piece_edit'),
-
-    # ex: /gallery/pieces/5/edit/submit
-    path('pieces/<int:piece_id>/submitedit/', views.edit_gallery_piece, name='edit_gallery_piece'),
 
     # ex: /gallery/exhibitions
     path('exhibitions/', views.exhibitions_list_view, name='exhibitions_list_view'),

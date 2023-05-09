@@ -15,24 +15,24 @@
 <div class="container py-5">
   <div class="list-group">
     <li class="list-group-item d-flex flex-row border-dark bg-dark">
-      <div class="h3 my-auto text-white">{{ piece.title }}</div>
+      <div class="h3 my-auto text-white me-auto">{{ piece.title }}</div>
+      <a href="/gallery/pieces/{{ piece.id }}/edit/" class="btn btn-outline-light me-2">Edit</a>
+      <a href="/gallery/pieces/{{ piece.id }}/delete/" class="btn btn-outline-danger">Delete</a>
     </li>
     <li class="list-group-item bg-white border-dark">
       <div class="container">
         <div class="row">
           <div class="col">
-            Image goes here
+            <img src="{{ piece.image.url }}">
           </div>
           <div class="col">
-            Description goes here
+            <h3>Description</h3>
+            <p>{{ piece.description }}</p>
           </div>
         </div>
       </div>
     </li>
   </div>
-  <p>{{ piece.description }}</p>
-  <img src="{{ piece.image.url }}">
-  <p>This is the detail page for piece {{piece.title}}, id {{piece.id}}</p>
 </div>
 
 {% endblock %}

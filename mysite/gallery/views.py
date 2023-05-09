@@ -106,6 +106,46 @@ def get_new_gallery_piece(request):
         return HttpResponseRedirect("/gallery")
 
 
+def new_gallery_piece(request):
+    if not request.user.is_authenticated:
+        return HttpResponseNotAllowed("You must be logged in to do that.")
+
+    # if this is a POST request we need to process the form data
+    if request.method == 'POST':
+        r_post = request.POST
+        r_files = request.FILES
+
+        # check whether it's valid:
+        try:
+            validate_new_gallery_piece_form(dict(list(r_post.items())[1:]), r_files)
+        except ValidationError:
+            return HttpResponseBadRequest("Form data invalid")
+        else:
+            piece_title = r_post['pieceTitle']
+            piece_desc = r_post['pieceDescription']
+            piece_image = r_files['pieceImage']
+
+            # construct a new gallery piece with the form data
+            new_gallery_piece = GalleryPiece(title=piece_title,
+                                             description=piece_desc,
+                                             pub_date=timezone.now(),
+                                             user=request.user,
+                                             image=piece_image)
+            new_gallery_piece.clean()
+
+            # save the new gallery piece to the database
+            new_gallery_piece.save()
+
+            messages.success(request, "Piece created successfully.")
+
+            return HttpResponseRedirect("/gallery/pieces")
+
+    # if a GET (or any other method) we'll redirect to the gallery page
+    else:
+        return render(request=request,
+                      template_name="mysite/gallery_piece_new.html")
+
+
 def edit_gallery_piece(request, piece_id):
     if not request.user.is_authenticated:
         return HttpResponseNotAllowed("You must be logged in to do that.")
@@ -119,6 +159,7 @@ def edit_gallery_piece(request, piece_id):
     title = piece.title
     desc = piece.description
     img = piece.image
+    piece_id = piece.id
 
     title_error = ""
     desc_error = ""
@@ -195,6 +236,7 @@ def edit_gallery_piece(request, piece_id):
                            'piece_title': title,
                            'piece_desc': desc,
                            'piece_img': img,
+                           'piece_id': piece_id,
                            'title_error': title_error,
                            'desc_error': desc_error,
                            'img_error': img_error})

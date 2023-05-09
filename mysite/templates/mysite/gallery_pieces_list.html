@@ -24,13 +24,13 @@
 <div class="container py-5">
   <div class="list-group">
     <li class="list-group-item d-flex flex-row border-dark bg-dark">
-      <div class="h3 my-auto text-white">Pieces</div>
+      <div class="h3 my-auto text-white me-auto me-md-3">Pieces</div>
+      <a href="/gallery/pieces/new/" class="btn btn-outline-light">New Piece</a>
     </li>
     {% for piece in pieces %}
       <li class="list-group-item d-flex justify-content-start bg-white border-dark">
         <a href="/gallery/pieces/{{ piece.id }}/"
-           class="my-auto fw-bold text-decoration-none piece-link-hover-effect piece-link me-auto me-md-2">{{piece.title}}</a>
-        <a href="/gallery/pieces/{{ piece.id }}/edit/" class="btn btn-outline-dark">Edit</a>
+           class="my-auto fw-bold text-decoration-none piece-link-hover-effect piece-link me-auto me-md-2">{{ piece.title }}</a>
       </li>
     {% endfor %}
   </div>
