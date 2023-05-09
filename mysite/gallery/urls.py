@@ -29,7 +29,4 @@ urlpatterns = [
 
     # ex: /gallery/exhibitions/5
     path('exhibitions/<int:exhibition_id>/', views.exhibition_detail, name='exhibition_detail'),
-
-    # ex: /gallery/add-gallery-piece
-    path('add-gallery-piece/', views.get_new_gallery_piece, name='get_new_gallery_piece'),
 ]

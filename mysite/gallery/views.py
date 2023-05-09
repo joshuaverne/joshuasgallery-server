@@ -30,6 +30,9 @@ def index(request):
                   context={'pieces': pieces_list, 'exhibs': exhibs_list})
 
 
+# Gallery Piece
+
+
 def pieces_list_view(request):
     if not request.user.is_authenticated:
         return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED)
@@ -50,70 +53,6 @@ def piece_detail(request, piece_id):
     return render(request=request,
                   template_name="mysite/gallery_piece_detail.html",
                   context={'piece': piece})
-
-
-def exhibitions_list_view(request):
-    if not request.user.is_authenticated:
-        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED)
-
-    exhibs_list = Exhibition.objects.filter(user=request.user)
-
-    return render(request=request,
-                  template_name="mysite/exhibitions_list.html",
-                  context={'exhibs': exhibs_list})
-
-
-def exhibition_detail(request, exhibition_id):
-    if not request.user.is_authenticated:
-        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED)
-
-    exhib = Exhibition.objects.get(id=exhibition_id)
-
-    if not exhib.user == request.user:
-        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED)
-
-    return render(request=request,
-                  template_name='mysite/exhibition_detail.html',
-                  context={'exhib': exhib})
-
-
-def get_new_gallery_piece(request):
-    if not request.user.is_authenticated:
-        return HttpResponseNotAllowed("You must be logged in to do that.")
-
-    # if this is a POST request we need to process the form data
-    if request.method == 'POST':
-        r_post = request.POST
-        r_files = request.FILES
-
-        # check whether it's valid:
-        try:
-            validate_new_gallery_piece_form(dict(list(r_post.items())[1:]), r_files)
-        except ValidationError:
-            return HttpResponseBadRequest("Form data invalid")
-        else:
-            piece_title = r_post['pieceTitle']
-            piece_desc = r_post['pieceDescription']
-            piece_image = r_files['pieceImage']
-
-            # construct a new gallery piece with the form data
-            new_gallery_piece = GalleryPiece(title=piece_title,
-                                             description=piece_desc,
-                                             pub_date=timezone.now(),
-                                             user=request.user,
-                                             image=piece_image)
-            new_gallery_piece.clean()
-
-            # save the new gallery piece to the database
-            new_gallery_piece.save()
-
-            messages.success(request, "Piece created successfully.")
-
-            return HttpResponseRedirect("/gallery")
-
-    # if a GET (or any other method) we'll redirect to the gallery page
-    else:
-        return HttpResponseRedirect("/gallery")
 
 
 def new_gallery_piece(request):
@@ -268,6 +207,71 @@ def delete_gallery_piece(request, piece_id):
     return HttpResponseRedirect("/gallery/pieces")
 
 
+# Exhibition
+
+
+def exhibitions_list_view(request):
+    if not request.user.is_authenticated:
+        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED)
+
+    exhibs_list = Exhibition.objects.filter(user=request.user)
+
+    return render(request=request,
+                  template_name="mysite/exhibitions_list.html",
+                  context={'exhibs': exhibs_list})
+
+
+def exhibition_detail(request, exhibition_id):
+    if not request.user.is_authenticated:
+        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED)
+
+    exhib = Exhibition.objects.get(id=exhibition_id)
+
+    if not exhib.user == request.user:
+        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED)
+
+    return render(request=request,
+                  template_name='mysite/exhibition_detail.html',
+                  context={'exhib': exhib})
+
+
+def new_exhibition(request):
+    if not request.user.is_authenticated:
+        return HttpResponseNotAllowed("You must be logged in to do that.")
+
+    if request.method == 'POST':
+        r_post = request.POST
+
+        # validate
+        try:
+            validate_new_exhibition_form(dict(list(r_post.items())[1:]))
+        except ValidationError:
+            return HttpResponseBadRequest("Form data invalid")
+        else:
+            exhib_title = r_post['exhibitionTitle']
+            exhib_desc = r_post['exhibitionDescription']
+
+            # construct a new exhibition with the form data
+            new_exhibition = Exhibition(title=exhib_title,
+                                        description=exhib_desc,
+                                        user=request.user)
+
+            new_exhibition.save()
+
+            messages.success(request, "Exhibition created successfully.")
+
+            # redirect to a new URL:
+            return HttpResponseRedirect("/gallery/exhibitions")
+
+    # if a GET (or any other method) we'll render the new exhibition form
+    else:
+        return render(request=request,
+                      template_name="mysite/exhibition_new.html")
+
+
+# Form validation methods
+
+
 def validate_gallery_piece_title(t):
     if len(t) > PIECE_TITLE_LEN_MAX:
         raise ValidationError("Title is too long (Max 200 characters)")
@@ -315,40 +319,6 @@ def validate_new_gallery_piece_form(form_data, file_data):
         raise ValidationError("File too large")
 
     return True
-
-
-def new_exhibition(request):
-    if not request.user.is_authenticated:
-        return HttpResponseNotAllowed("You must be logged in to do that.")
-
-    if request.method == 'POST':
-        r_post = request.POST
-
-        # validate
-        try:
-            validate_new_exhibition_form(dict(list(r_post.items())[1:]))
-        except ValidationError:
-            return HttpResponseBadRequest("Form data invalid")
-        else:
-            exhib_title = r_post['exhibitionTitle']
-            exhib_desc = r_post['exhibitionDescription']
-
-            # construct a new exhibition with the form data
-            new_exhibition = Exhibition(title=exhib_title,
-                                        description=exhib_desc,
-                                        user=request.user)
-
-            new_exhibition.save()
-
-            messages.success(request, "Exhibition created successfully.")
-
-            # redirect to a new URL:
-            return HttpResponseRedirect("/gallery/exhibitions")
-
-    # if a GET (or any other method) we'll render the new exhibition form
-    else:
-        return render(request=request,
-                      template_name="mysite/exhibition_new.html")
 
 
 def validate_new_exhibition_form(form_data):
