@@ -242,6 +242,22 @@ def edit_gallery_piece(request, piece_id):
                            'img_error': img_error})
 
 
+def delete_gallery_piece(request, piece_id):
+    if not request.user.is_authenticated:
+        return HttpResponseNotAllowed("You must be logged in to do that.")
+
+    piece = GalleryPiece.objects.get(id=piece_id)
+
+    if not piece.user == request.user:
+        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED)
+
+    piece.delete()
+
+    messages.success(request, "Piece deleted successfully.")
+
+    return HttpResponseRedirect("/gallery/pieces")
+
+
 def validate_gallery_piece_title(t):
     if len(t) > PIECE_TITLE_LEN_MAX:
         raise ValidationError("Title is too long (Max 200 characters)")

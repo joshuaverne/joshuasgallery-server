@@ -2,6 +2,7 @@ Django==4.1.5
 django-storages==1.13.2
 django-bootstrap5==22.2
 django-imagekit==4.1.0
+django-cleanup==7.0.0
 boto3==1.26.103
 Pillow==9.4.0
 selenium==4.8.0
