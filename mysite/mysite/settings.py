@@ -81,6 +81,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_bootstrap5',
     'imagekit',
+    'django_cleanup.apps.CleanupConfig',
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
