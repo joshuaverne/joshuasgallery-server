@@ -1,0 +1,16 @@
+<form action="/gallery/exhibitions/{{ exhib_id }}/edit/" enctype="multipart/form-data" method="post">
+  {% csrf_token %}
+  <div class="form-group my-3">
+    <label class="mb-1" for="exhibTitle">Title<span style="color: red;">*</span></label>
+    <input class="form-control" id="exhibTitle" name="exhibTitle"
+           placeholder="Enter exhibition title" value="{{ exhib_title }}">
+    <div style="color: red">{{ title_error }}</div>
+  </div>
+  <div class="form-group mb-3">
+    <label class="mb-1" for="exhibDesc">Description</label>
+    <textarea class="form-control" id="exhibDesc" name="exhibDesc"
+              placeholder="Enter exhibition description">{{ exhib_desc }}</textarea>
+    <div style="color: red">{{ desc_error }}</div>
+  </div>
+  <input type="submit" value="Submit">
+</form>

@@ -29,4 +29,10 @@ urlpatterns = [
 
     # ex: /gallery/exhibitions/5
     path('exhibitions/<int:exhibition_id>/', views.exhibition_detail, name='exhibition_detail'),
+
+    # ex: /gallery/exhibitions/5/edit
+    path('exhibitions/<int:exhibition_id>/edit/', views.edit_exhibition, name='exhibition_edit'),
+
+    # ex: /gallery/exhibitions/5/delete
+    path('exhibitions/<int:exhibition_id>/delete/', views.delete_exhibition, name='exhibition_delete'),
 ]

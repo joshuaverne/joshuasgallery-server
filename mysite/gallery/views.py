@@ -133,7 +133,7 @@ def edit_gallery_piece(request, piece_id):
 
         if not (title_c or desc_c or img_c):
             messages.error(request, "No changes were made.")
-            return HttpResponseRedirect("/gallery/pieces/" + str(piece_id) + "/edit")
+            return HttpResponseRedirect("/gallery/pieces/" + str(piece_id) + "/edit/")
 
         save = True
 
@@ -164,15 +164,6 @@ def edit_gallery_piece(request, piece_id):
             messages.success(request, "Changes successfully applied")
 
             actual_title = title
-            return render(request=request,
-                          template_name="mysite/gallery_piece_detail_edit.html",
-                          context={'actual_title': actual_title,
-                                   'piece_title': title,
-                                   'piece_desc': desc,
-                                   'piece_img': img,
-                                   'title_error': title_error,
-                                   'desc_error': desc_error,
-                                   'img_error': img_error})
 
         else:
             messages.error(request, "Invalid Piece info. Please correct the errors below.")
@@ -202,7 +193,7 @@ def delete_gallery_piece(request, piece_id):
 
     messages.success(request, "Piece deleted successfully.")
 
-    return HttpResponseRedirect("/gallery/pieces")
+    return HttpResponseRedirect("/gallery/pieces/")
 
 
 # Exhibition
@@ -265,6 +256,95 @@ def new_exhibition(request):
     else:
         return render(request=request,
                       template_name="mysite/exhibition_new.html")
+
+
+def edit_exhibition(request, exhibition_id):
+    if not request.user.is_authenticated:
+        return HttpResponseNotAllowed("You must be logged in to do that.")
+
+    exhib = Exhibition.objects.get(id=exhibition_id)
+
+    if not exhib.user == request.user:
+        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED)
+
+    actual_title = exhib.title
+    title = exhib.title
+    desc = exhib.description
+
+    title_error = ""
+    desc_error = ""
+
+    if request.method == 'POST':
+        if 'exhibTitle' not in request.POST or 'exhibDesc' not in request.POST:
+            return HttpResponseBadRequest("Required fields not in post data")
+
+        title = request.POST['exhibTitle']
+        desc = request.POST['exhibDesc']
+
+        title_c = False
+        desc_c = False
+
+        if title != exhib.title:
+            title_c = True
+        if desc != exhib.description:
+            desc_c = True
+
+        if not (title_c or desc_c):
+            messages.error(request, "No changes were made.")
+            return HttpResponseRedirect("/gallery/pieces/" + str(exhibition_id) + "/edit/")
+
+        save = True
+
+        if title_c:
+            try:
+                validate_exhibition_title(title)
+            except ValidationError as e:
+                title_error = e.message
+                save = False
+
+        if desc_c:
+            try:
+                validate_exhibition_description(desc)
+            except ValidationError as e:
+                desc_error = e.message
+                save = False
+
+        if save:
+            exhib.title = title
+            exhib.description = desc
+            exhib.save()
+
+            messages.success(request, "Changes successfully applied")
+
+            actual_title = title
+
+        else:
+            messages.error(request, "Invalid Exhibition info. Please correct the errors below.")
+
+    return render(request=request,
+                  template_name="mysite/exhibition_edit.html",
+                  context={'actual_title': actual_title,
+                           'exhib_title': title,
+                           'exhib_desc': desc,
+                           'exhib_id': exhibition_id,
+                           'title_error': title_error,
+                           'desc_error': desc_error})
+
+
+def delete_exhibition(request, exhibition_id):
+    if not request.user.is_authenticated:
+        return HttpResponseNotAllowed("You must be logged in to do that.")
+
+    exhib = Exhibition.objects.get(id=exhibition_id)
+
+    if not exhib.user == request.user:
+        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED)
+
+    exhib.delete()
+
+    messages.success(request, "Exhibition deleted successfully.")
+
+    return HttpResponseRedirect("/gallery/exhibitions/")
 
 
 # Form validation methods
@@ -331,3 +411,20 @@ def validate_new_exhibition_form(form_data):
 
     if len(desc) > EXHIB_DESC_LEN_MAX:
         raise ValidationError("Exhibition description too long")
+
+
+def validate_exhibition_title(t):
+    if not t:
+        raise ValidationError("Title cannot be blank.")
+
+    if len(t) > 200:
+        raise ValidationError("Title is too long (Max 200 characters)")
+
+    return
+
+
+def validate_exhibition_description(d):
+    if len(d) > 1000:
+        raise ValidationError("Description is too long (Max 1000 characters)"
+                              "")
+    return
