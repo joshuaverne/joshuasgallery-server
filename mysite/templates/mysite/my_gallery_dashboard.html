@@ -36,10 +36,6 @@
         <div class="col-sm">Example Exhib</div>
     </div>
     <p>Welcome to the gallery dashboard!</p>
-    <p>Pieces: {% for piece in pieces %} {{piece.title}}, {% endfor %}</p>
-    <p>Exhibitions: {% for exhib in exhibs %} {{exhib.title}}, {% endfor %}</p>
-    {% include 'mysite/forms/new_exhibition_form.html' %}
-    {% include 'mysite/forms/new_gallery_piece_form.html' %}
 </div>
 
 <template id="piece-card">
