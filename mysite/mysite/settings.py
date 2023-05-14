@@ -140,7 +140,7 @@ elif ENV == ENV_DEV:
         }
     }
 elif ENV == ENV_PROD:
-    with open(os.path.join(BASE_DIR, '../config/database-jg-prod-pw.txt')) as f:
+    with open(os.path.join(BASE_DIR, '../config/jg-prod-freetier_pw.txt')) as f:
         DB_PW = f.read().strip()
     DATABASES = {
         'default': {
@@ -149,7 +149,7 @@ elif ENV == ENV_PROD:
             'ENGINE': 'django.db.backends.mysql',
             'USER': 'admin',
             'PASSWORD': DB_PW,
-            'HOST': 'database-jg-prod.cluster-c6ytnqpjyedh.us-east-1.rds.amazonaws.com',
+            'HOST': 'jg-prod-freetier.c6ytnqpjyedh.us-east-1.rds.amazonaws.com',
             'POST': '3306',
         }
     }
