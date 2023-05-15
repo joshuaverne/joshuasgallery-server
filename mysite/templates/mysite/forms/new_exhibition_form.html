@@ -1,12 +1,12 @@
 <form action="/gallery/exhibitions/new/" enctype="multipart/form-data" method="post">
     {% csrf_token %}
-    <div class="form-group">
-        <label for="inputTitle">Title<span style="color: red;">*</span></label>
+    <div class="form-group my-3">
+        <label class="mb-1" for="inputTitle">Title<span style="color: red;">*</span></label>
         <input class="form-control" id="inputTitle" name="exhibitionTitle" placeholder="Enter exhibition title" required>
     </div>
-    <div class="form-group">
-        <label for="inputDescription">Description</label>
+    <div class="form-group mb-3">
+        <label class="mb-1" for="inputDescription">Description</label>
         <textarea class="form-control" id="inputDescription" name="exhibitionDescription" placeholder="Enter exhibition description"></textarea>
     </div>
-    <input type="submit" value="Submit">
+    <input class="btn btn-primary" type="submit" value="Submit">
 </form>

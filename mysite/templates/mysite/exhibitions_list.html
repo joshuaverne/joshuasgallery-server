@@ -13,11 +13,11 @@
 {% bootstrap_messages %}
 
 <style>
-  .exhib-link-hover-effect:hover {
-    color: red;
+  .list-link-hover-effect:hover {
+    background-color: lightgray;
   }
-  .exhib-link {
-    color: black;
+  .list-link {
+    background-color: white;
   }
 </style>
 
@@ -29,10 +29,11 @@
     </li>
     {% if exhibs %}
     {% for exhib in exhibs %}
-    <li class="list-group-item d-flex justify-content-start bg-white border-dark">
-      <a href="/gallery/exhibitions/{{ exhib.id }}/"
-         class="my-auto fw-bold text-decoration-none exhib-link-hover-effect exhib-link me-auto me-md-2">{{ exhib.title }}</a>
-    </li>
+    <a href="/gallery/exhibitions/{{ exhib.id }}/"
+            class="list-group-item d-flex justify-content-start border-dark
+           text-decoration-none list-link-hover-effect list-link">
+      <p class="my-auto fw-bold text-decoration-none me-auto me-md-2 text-black">{{ exhib.title }}</p>
+    </a>
     {% endfor %}
     {% else %}
     <li class="list-group-item d-flex justify-content-start bg-white border-dark">No exhibitions to display.</li>

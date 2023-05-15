@@ -13,11 +13,11 @@
 {% bootstrap_messages %}
 
 <style>
-  .piece-link-hover-effect:hover {
-    color: red;
+  .list-link-hover-effect:hover {
+    background-color: lightgray;
   }
-  .piece-link {
-    color: black;
+  .list-link {
+    background-color: white;
   }
 </style>
 
@@ -29,10 +29,11 @@
     </li>
     {% if pieces %}
       {% for piece in pieces %}
-        <li class="list-group-item d-flex justify-content-start bg-white border-dark">
-          <a href="/gallery/pieces/{{ piece.id }}/"
-             class="my-auto fw-bold text-decoration-none piece-link-hover-effect piece-link me-auto me-md-2">{{ piece.title }}</a>
-        </li>
+        <a href="/gallery/pieces/{{ piece.id }}/"
+           class="list-group-item d-flex justify-content-start border-dark
+           text-decoration-none list-link-hover-effect list-link">
+          <p class="my-auto fw-bold me-auto me-md-2 text-black">{{ piece.title }}</p>
+        </a>
       {% endfor %}
     {% else %}
       <li class="list-group-item d-flex justify-content-start bg-white border-dark">No pieces to display.</li>

@@ -291,7 +291,7 @@ def edit_exhibition(request, exhibition_id):
 
         if not (title_c or desc_c):
             messages.error(request, "No changes were made.")
-            return HttpResponseRedirect("/gallery/pieces/" + str(exhibition_id) + "/edit/")
+            return HttpResponseRedirect("/gallery/exhibitions/" + str(exhibition_id) + "/edit/")
 
         save = True
 
