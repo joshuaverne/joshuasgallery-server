@@ -6,7 +6,7 @@ from django.test import RequestFactory, TestCase, override_settings
 from django.contrib.auth.models import AnonymousUser, User
 
 # noinspection PyUnresolvedReferences
-from gallery.views import new_gallery_piece, new_exhibition
+from gallery.views import new_gallery_piece, new_exhibition, delete_gallery_piece
 # noinspection PyUnresolvedReferences
 from gallery.models import GalleryPiece
 
@@ -154,6 +154,68 @@ class GalleryPieceFormViewTest(TestCase):
             response = new_gallery_piece(request)
 
         self.assertEqual(400, response.status_code)
+
+
+@override_settings(MEDIA_ROOT=MEDIA_ROOT)
+class GalleryPieceDeleteTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        pass
+
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(MEDIA_ROOT, ignore_errors=True)
+        super().tearDownClass()
+
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.user = User.objects.create_user(
+            username="jacob", email="jacob@…", password="top_secret"
+        )
+        self.anonUser = AnonymousUser()
+        self.good_title = 'x' * 500
+        self.good_desc = 'x' * 1000
+
+        with open("test/images/woody.jpg", "rb") as fp:
+            test_post_data = {'placeholder': "PLACEHOLDER",
+                              'pieceTitle': self.good_title,
+                              'pieceDescription': self.good_desc,
+                              'pieceImage': fp}
+            request = self.factory.post("/gallery/pieces/new", test_post_data)
+
+            request.user = self.user
+
+            with middleware(request):
+                new_gallery_piece(request)
+
+        self.piece = GalleryPiece.objects.all()[0]
+        self.piece_id = self.piece.id
+
+    def test_delete_piece(self):
+        self.assertEqual(1, len(GalleryPiece.objects.all()))
+
+        request = self.factory.get("/gallery/exhibitions/" + str(self.piece_id) + "/delete")
+        request.user = self.user
+
+        with middleware(request):
+            response = delete_gallery_piece(request, self.piece_id)
+
+        self.assertEqual(302, response.status_code)
+
+        self.assertEqual(0, len(GalleryPiece.objects.all()))
+
+    def test_delete_piece_anonymous_user(self):
+        self.assertEqual(1, len(GalleryPiece.objects.all()))
+
+        request = self.factory.get("/gallery/exhibitions/" + str(self.piece_id) + "/delete")
+        request.user = self.anonUser
+
+        with middleware(request):
+            response = delete_gallery_piece(request, self.piece_id)
+
+        self.assertEqual(405, response.status_code)
+
+        self.assertEqual(1, len(GalleryPiece.objects.all()))
 
 
 class ExhibitionFormViewTest(TestCase):
