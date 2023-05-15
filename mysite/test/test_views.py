@@ -217,6 +217,21 @@ class GalleryPieceDeleteTest(TestCase):
 
         self.assertEqual(1, len(GalleryPiece.objects.all()))
 
+    def test_delete_piece_wrong_user(self):
+        self.assertEqual(1, len(GalleryPiece.objects.all()))
+
+        request = self.factory.get("/gallery/exhibitions/" + str(self.piece_id) + "/delete")
+        request.user = User.objects.create_user(
+            username="jacob2", email="jacob2@…", password="top2_secret"
+        )
+
+        with middleware(request):
+            response = delete_gallery_piece(request, self.piece_id)
+
+        self.assertEqual(401, response.status_code)
+
+        self.assertEqual(1, len(GalleryPiece.objects.all()))
+
 
 class ExhibitionFormViewTest(TestCase):
 
