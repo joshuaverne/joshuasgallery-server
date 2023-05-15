@@ -1,13 +1,19 @@
-import contextlib
+import contextlib, shutil, tempfile
 
 from django.contrib.messages.middleware import MessageMiddleware
 from django.contrib.sessions.middleware import SessionMiddleware
-from django.test import RequestFactory, TestCase
-from django.core.exceptions import ValidationError
+from django.test import RequestFactory, TestCase, override_settings
 from django.contrib.auth.models import AnonymousUser, User
 
 # noinspection PyUnresolvedReferences
 from gallery.views import new_gallery_piece, new_exhibition
+# noinspection PyUnresolvedReferences
+from gallery.models import GalleryPiece
+
+EXHIB_TITLE_MAX_LEN = 200
+EXHIB_DESC_MAX_LEN = 1000
+
+MEDIA_ROOT = tempfile.mktemp()
 
 
 @contextlib.contextmanager
@@ -24,10 +30,16 @@ def middleware(request):
     yield request
 
 
+@override_settings(MEDIA_ROOT=MEDIA_ROOT)
 class GalleryPieceFormViewTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         pass
+
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(MEDIA_ROOT, ignore_errors=True)
+        super().tearDownClass()
 
     def setUp(self):
         self.factory = RequestFactory()
@@ -61,6 +73,12 @@ class GalleryPieceFormViewTest(TestCase):
                 response = new_gallery_piece(request)
 
         self.assertEqual(302, response.status_code)
+
+        all_pieces = GalleryPiece.objects.all()
+        for p in all_pieces:
+            self.assertEqual(self.user, p.user)
+            self.assertEqual(self.good_title, p.title)
+            self.assertEqual(self.good_desc, p.description)
 
     def test_create_piece_anonymous_user(self):
         with open("test/images/woody.jpg", "rb") as fp:
@@ -146,8 +164,8 @@ class ExhibitionFormViewTest(TestCase):
             username="jacob", email="jacob@…", password="top_secret"
         )
         self.anonUser = AnonymousUser()
-        self.good_title = 'x' * 200
-        self.good_desc = 'x' * 1000
+        self.good_title = 'x' * EXHIB_TITLE_MAX_LEN
+        self.good_desc = 'x' * EXHIB_DESC_MAX_LEN
 
     def test_create_exhibition(self):
         test_post_data = {'placeholder': "PLACEHOLDER",
@@ -204,3 +222,15 @@ class ExhibitionFormViewTest(TestCase):
             response = new_exhibition(request)
 
         self.assertEqual(400, response.status_code)
+
+
+class ExhibitionEditTest(TestCase):
+
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.user = User.objects.create_user(
+            username="jacob", email="jacob@…", password="top_secret"
+        )
+        self.anonUser = AnonymousUser()
+        self.good_title = 'x' * EXHIB_TITLE_MAX_LEN
+        self.good_desc = 'x' * EXHIB_DESC_MAX_LEN
