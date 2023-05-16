@@ -6,7 +6,7 @@ from django.test import RequestFactory, TestCase, override_settings
 from django.contrib.auth.models import AnonymousUser, User
 
 # noinspection PyUnresolvedReferences
-from gallery.views import new_gallery_piece, new_exhibition, delete_gallery_piece
+from gallery.views import new_gallery_piece, new_exhibition, delete_gallery_piece, edit_gallery_piece
 # noinspection PyUnresolvedReferences
 from gallery.models import GalleryPiece
 
@@ -31,7 +31,7 @@ def middleware(request):
 
 
 @override_settings(MEDIA_ROOT=MEDIA_ROOT)
-class GalleryPieceFormViewTest(TestCase):
+class GalleryPieceCreateTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         pass
@@ -231,6 +231,153 @@ class GalleryPieceDeleteTest(TestCase):
         self.assertEqual(401, response.status_code)
 
         self.assertEqual(1, len(GalleryPiece.objects.all()))
+
+
+@override_settings(MEDIA_ROOT=MEDIA_ROOT)
+class GalleryPieceEditTest(TestCase):
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(MEDIA_ROOT, ignore_errors=True)
+        super().tearDownClass()
+
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.user = User.objects.create_user(
+            username="jacob", email="jacob@…", password="top_secret"
+        )
+        self.anonUser = AnonymousUser()
+        self.good_title = 'x' * 500
+        self.good_desc = 'x' * 1000
+
+        with open("test/images/woody.jpg", "rb") as fp:
+            test_post_data = {'placeholder': "PLACEHOLDER",
+                              'pieceTitle': self.good_title,
+                              'pieceDescription': self.good_desc,
+                              'pieceImage': fp}
+            request = self.factory.post("/gallery/pieces/new", test_post_data)
+
+            request.user = self.user
+
+            with middleware(request):
+                new_gallery_piece(request)
+
+        self.piece = GalleryPiece.objects.all()[0]
+        self.piece_id = self.piece.id
+        self.img_url = self.piece.image.url
+
+    def test_edit_all_fields(self):
+        self.assert_initial_values(self.piece)
+
+        new_title = "New title!"
+        new_desc = "New description!"
+
+        with open("test/images/scream.jpg", "rb") as fp:
+            test_post_data = {'placeholder': "PLACEHOLDER",
+                              'pieceTitle': new_title,
+                              'pieceDescription': new_desc,
+                              'pieceImage': fp}
+            request = self.factory.post("/gallery/pieces/" + str(self.piece_id) + "/edit", test_post_data)
+
+            request.user = self.user
+
+            with middleware(request):
+                response = edit_gallery_piece(request, self.piece_id)
+
+        self.assertEquals(200, response.status_code)
+        self.assertEquals(1, len(GalleryPiece.objects.all()))
+        edited_piece = GalleryPiece.objects.all()[0]
+        self.assertEquals(new_title, edited_piece.title)
+        self.assertEquals(new_desc, edited_piece.description)
+        self.assertTrue("scream" in edited_piece.image.url)
+
+    def test_edit_bad_title(self):
+        self.assert_initial_values(self.piece)
+
+        new_title = "x" * 501
+        new_desc = "New description!"
+
+        with open("test/images/scream.jpg", "rb") as fp:
+            test_post_data = {'placeholder': "PLACEHOLDER",
+                              'pieceTitle': new_title,
+                              'pieceDescription': new_desc,
+                              'pieceImage': fp}
+            request = self.factory.post("/gallery/pieces/" + str(self.piece_id) + "/edit", test_post_data)
+
+            request.user = self.user
+
+            with middleware(request):
+                response = edit_gallery_piece(request, self.piece_id)
+
+        self.assertEquals(200, response.status_code)
+        edited_piece = GalleryPiece.objects.all()[0]
+        self.assert_initial_values(edited_piece)
+
+    def test_edit_bad_description(self):
+        self.assert_initial_values(self.piece)
+
+        new_title = "New title!"
+        new_desc = "x" * 1001
+
+        with open("test/images/scream.jpg", "rb") as fp:
+            test_post_data = {'placeholder': "PLACEHOLDER",
+                              'pieceTitle': new_title,
+                              'pieceDescription': new_desc,
+                              'pieceImage': fp}
+            request = self.factory.post("/gallery/pieces/" + str(self.piece_id) + "/edit", test_post_data)
+
+            request.user = self.user
+
+            with middleware(request):
+                response = edit_gallery_piece(request, self.piece_id)
+
+        self.assertEquals(200, response.status_code)
+        edited_piece = GalleryPiece.objects.all()[0]
+        self.assert_initial_values(edited_piece)
+
+    def test_edit_bad_image(self):
+        self.assert_initial_values(self.piece)
+
+        new_title = "New title!"
+        new_desc = "New description!"
+
+        # image is wrong file type
+        with open("test/images/dragon.gif", "rb") as fp:
+            test_post_data = {'placeholder': "PLACEHOLDER",
+                              'pieceTitle': new_title,
+                              'pieceDescription': new_desc,
+                              'pieceImage': fp}
+            request = self.factory.post("/gallery/pieces/" + str(self.piece_id) + "/edit", test_post_data)
+
+            request.user = self.user
+
+            with middleware(request):
+                response = edit_gallery_piece(request, self.piece_id)
+
+        self.assertEquals(200, response.status_code)
+        edited_piece = GalleryPiece.objects.all()[0]
+        self.assert_initial_values(edited_piece)
+
+        # image is too large
+        with open("test/images/city.jpg", "rb") as fp:
+            test_post_data = {'placeholder': "PLACEHOLDER",
+                              'pieceTitle': new_title,
+                              'pieceDescription': new_desc,
+                              'pieceImage': fp}
+            request = self.factory.post("/gallery/pieces/" + str(self.piece_id) + "/edit", test_post_data)
+
+            request.user = self.user
+
+            with middleware(request):
+                response = edit_gallery_piece(request, self.piece_id)
+
+        self.assertEquals(200, response.status_code)
+        edited_piece = GalleryPiece.objects.all()[0]
+        self.assert_initial_values(edited_piece)
+
+    def assert_initial_values(self, checked_piece):
+        self.assertEquals(self.good_title, checked_piece.title)
+        self.assertEquals(self.good_desc, checked_piece.description)
+        self.assertEquals(self.img_url, checked_piece.image.url)
 
 
 class ExhibitionFormViewTest(TestCase):
