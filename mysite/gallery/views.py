@@ -17,6 +17,7 @@ EXHIB_TITLE_LEN_MAX = 200
 EXHIB_DESC_LEN_MAX = 1000
 MAX_IMG_SIZE_BYTES = 10000000
 
+FORBIDDEN_MSG = "You do not have access to this."
 
 def index(request):
     if not request.user.is_authenticated:
@@ -48,6 +49,9 @@ def piece_detail(request, piece_id):
         return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED, reason="You must be logged in to do that.")
 
     piece = GalleryPiece.objects.get(id=piece_id)
+
+    if not request.user == piece.user:
+        return HttpResponseForbidden(FORBIDDEN_MSG)
 
     return render(request=request,
                   template_name="mysite/gallery_piece_detail.html",

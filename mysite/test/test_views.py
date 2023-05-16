@@ -6,7 +6,7 @@ from django.test import RequestFactory, TestCase, override_settings
 from django.contrib.auth.models import AnonymousUser, User
 
 # noinspection PyUnresolvedReferences
-from gallery.views import new_gallery_piece, new_exhibition, delete_gallery_piece, edit_gallery_piece
+from gallery.views import new_gallery_piece, new_exhibition, delete_gallery_piece, edit_gallery_piece, piece_detail
 # noinspection PyUnresolvedReferences
 from gallery.models import GalleryPiece
 
@@ -16,6 +16,7 @@ EXHIB_DESC_MAX_LEN = 1000
 MEDIA_ROOT = tempfile.mktemp()
 
 NON_AUTHENTICATED_STATUS_CODE = 401
+FORBIDDEN_STATUS_CODE = 403
 
 
 @contextlib.contextmanager
@@ -156,6 +157,67 @@ class GalleryPieceCreateTest(TestCase):
             response = new_gallery_piece(request)
 
         self.assertEqual(400, response.status_code)
+
+
+@override_settings(MEDIA_ROOT=MEDIA_ROOT)
+class GalleryPieceDetailTest(TestCase):
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(MEDIA_ROOT, ignore_errors=True)
+        super().tearDownClass()
+
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.user = User.objects.create_user(
+            username="jacob", email="jacob@…", password="top_secret"
+        )
+        self.anonUser = AnonymousUser()
+        self.good_title = 'x' * 500
+        self.good_desc = 'x' * 1000
+
+        with open("test/images/woody.jpg", "rb") as fp:
+            test_post_data = {'placeholder': "PLACEHOLDER",
+                              'pieceTitle': self.good_title,
+                              'pieceDescription': self.good_desc,
+                              'pieceImage': fp}
+            request = self.factory.post("/gallery/pieces/new", test_post_data)
+
+            request.user = self.user
+
+            with middleware(request):
+                new_gallery_piece(request)
+
+        self.piece = GalleryPiece.objects.all()[0]
+        self.piece_id = self.piece.id
+
+    def test_piece_detail(self):
+        request = self.factory.get("/gallery/exhibitions/" + str(self.piece_id))
+        request.user = self.user
+
+        with middleware(request):
+            response = piece_detail(request, self.piece_id)
+
+        self.assertEqual(200, response.status_code)
+
+    def test_piece_detail_anonymous_user(self):
+        request = self.factory.get("/gallery/exhibitions/" + str(self.piece_id))
+        request.user = self.anonUser
+
+        with middleware(request):
+            response = piece_detail(request, self.piece_id)
+
+        self.assertEqual(NON_AUTHENTICATED_STATUS_CODE, response.status_code)
+
+    def test_piece_detail_wrong_user(self):
+        request = self.factory.get("/gallery/exhibitions/" + str(self.piece_id))
+        request.user = User.objects.create_user(
+            username="jacob2", email="jacob2@…", password="top2_secret"
+        )
+
+        with middleware(request):
+            response = piece_detail(request, self.piece_id)
+
+        self.assertEqual(FORBIDDEN_STATUS_CODE, response.status_code)
 
 
 @override_settings(MEDIA_ROOT=MEDIA_ROOT)
