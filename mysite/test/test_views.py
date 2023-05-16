@@ -292,7 +292,7 @@ class GalleryPieceDeleteTest(TestCase):
         with middleware(request):
             response = delete_gallery_piece(request, self.piece_id)
 
-        self.assertEqual(401, response.status_code)
+        self.assertEqual(FORBIDDEN_STATUS_CODE, response.status_code)
 
         self.assertEqual(1, len(GalleryPiece.objects.all()))
 
@@ -457,6 +457,30 @@ class GalleryPieceEditTest(TestCase):
                 response = edit_gallery_piece(request, self.piece_id)
 
         self.assertEquals(NON_AUTHENTICATED_STATUS_CODE, response.status_code)
+        edited_piece = GalleryPiece.objects.all()[0]
+        self.assert_initial_values(edited_piece)
+
+    def test_edit_wrong_user(self):
+        self.assert_initial_values(self.piece)
+
+        new_title = "New title!"
+        new_desc = "New description!"
+
+        with open("test/images/scream.jpg", "rb") as fp:
+            test_post_data = {'placeholder': "PLACEHOLDER",
+                              'pieceTitle': new_title,
+                              'pieceDescription': new_desc,
+                              'pieceImage': fp}
+            request = self.factory.post("/gallery/pieces/" + str(self.piece_id) + "/edit", test_post_data)
+
+            request.user = User.objects.create_user(
+                username="jacob2", email="jacob2@…", password="top2_secret"
+            )
+
+            with middleware(request):
+                response = edit_gallery_piece(request, self.piece_id)
+
+        self.assertEquals(FORBIDDEN_STATUS_CODE, response.status_code)
         edited_piece = GalleryPiece.objects.all()[0]
         self.assert_initial_values(edited_piece)
 

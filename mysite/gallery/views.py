@@ -51,7 +51,7 @@ def piece_detail(request, piece_id):
     piece = GalleryPiece.objects.get(id=piece_id)
 
     if not request.user == piece.user:
-        return HttpResponseForbidden(FORBIDDEN_MSG)
+        return HttpResponseForbidden(reason=FORBIDDEN_MSG)
 
     return render(request=request,
                   template_name="mysite/gallery_piece_detail.html",
@@ -105,7 +105,7 @@ def edit_gallery_piece(request, piece_id):
     piece = GalleryPiece.objects.get(id=piece_id)
 
     if not piece.user == request.user:
-        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED)
+        return HttpResponseForbidden(reason=FORBIDDEN_MSG)
 
     actual_title = piece.title
     title = piece.title
@@ -192,7 +192,7 @@ def delete_gallery_piece(request, piece_id):
     piece = GalleryPiece.objects.get(id=piece_id)
 
     if not piece.user == request.user:
-        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED)
+        return HttpResponseForbidden(reason=FORBIDDEN_MSG)
 
     piece.delete()
 
@@ -222,7 +222,7 @@ def exhibition_detail(request, exhibition_id):
     exhib = Exhibition.objects.get(id=exhibition_id)
 
     if not exhib.user == request.user:
-        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED)
+        return HttpResponseForbidden(reason=FORBIDDEN_MSG)
 
     return render(request=request,
                   template_name='mysite/exhibition_detail.html',
@@ -270,7 +270,7 @@ def edit_exhibition(request, exhibition_id):
     exhib = Exhibition.objects.get(id=exhibition_id)
 
     if not exhib.user == request.user:
-        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED)
+        return HttpResponseForbidden(reason=FORBIDDEN_MSG)
 
     actual_title = exhib.title
     title = exhib.title
@@ -343,7 +343,7 @@ def delete_exhibition(request, exhibition_id):
     exhib = Exhibition.objects.get(id=exhibition_id)
 
     if not exhib.user == request.user:
-        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED)
+        return HttpResponseForbidden(reason=FORBIDDEN_MSG)
 
     exhib.delete()
 
