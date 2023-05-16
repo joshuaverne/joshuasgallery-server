@@ -15,6 +15,8 @@ EXHIB_DESC_MAX_LEN = 1000
 
 MEDIA_ROOT = tempfile.mktemp()
 
+NON_AUTHENTICATED_STATUS_CODE = 401
+
 
 @contextlib.contextmanager
 def middleware(request):
@@ -92,7 +94,7 @@ class GalleryPieceCreateTest(TestCase):
 
             response = new_gallery_piece(request)
 
-        self.assertEqual(405, response.status_code)
+        self.assertEqual(NON_AUTHENTICATED_STATUS_CODE, response.status_code)
 
     def test_create_piece_title_too_long(self):
         title = "x" * 501
@@ -213,7 +215,7 @@ class GalleryPieceDeleteTest(TestCase):
         with middleware(request):
             response = delete_gallery_piece(request, self.piece_id)
 
-        self.assertEqual(405, response.status_code)
+        self.assertEqual(NON_AUTHENTICATED_STATUS_CODE, response.status_code)
 
         self.assertEqual(1, len(GalleryPiece.objects.all()))
 
@@ -374,6 +376,28 @@ class GalleryPieceEditTest(TestCase):
         edited_piece = GalleryPiece.objects.all()[0]
         self.assert_initial_values(edited_piece)
 
+    def test_edit_anonymous_user(self):
+        self.assert_initial_values(self.piece)
+
+        new_title = "New title!"
+        new_desc = "New description!"
+
+        with open("test/images/scream.jpg", "rb") as fp:
+            test_post_data = {'placeholder': "PLACEHOLDER",
+                              'pieceTitle': new_title,
+                              'pieceDescription': new_desc,
+                              'pieceImage': fp}
+            request = self.factory.post("/gallery/pieces/" + str(self.piece_id) + "/edit", test_post_data)
+
+            request.user = self.anonUser
+
+            with middleware(request):
+                response = edit_gallery_piece(request, self.piece_id)
+
+        self.assertEquals(NON_AUTHENTICATED_STATUS_CODE, response.status_code)
+        edited_piece = GalleryPiece.objects.all()[0]
+        self.assert_initial_values(edited_piece)
+
     def assert_initial_values(self, checked_piece):
         self.assertEquals(self.good_title, checked_piece.title)
         self.assertEquals(self.good_desc, checked_piece.description)
@@ -415,7 +439,7 @@ class ExhibitionFormViewTest(TestCase):
         with middleware(request):
             response = new_exhibition(request)
 
-        self.assertEqual(405, response.status_code)
+        self.assertEqual(NON_AUTHENTICATED_STATUS_CODE, response.status_code)
 
     def test_create_exhibition_title_too_long(self):
         long_title = 'x' * 201

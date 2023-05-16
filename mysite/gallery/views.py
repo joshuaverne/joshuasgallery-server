@@ -1,7 +1,8 @@
 import http
 
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, HttpResponseBadRequest, \
+    HttpResponseNotAllowed
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.contrib import messages
@@ -33,7 +34,7 @@ def index(request):
 
 def pieces_list_view(request):
     if not request.user.is_authenticated:
-        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED)
+        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED, reason="You must be logged in to do that.")
 
     pieces_list = GalleryPiece.objects.filter(user=request.user)
 
@@ -44,7 +45,7 @@ def pieces_list_view(request):
 
 def piece_detail(request, piece_id):
     if not request.user.is_authenticated:
-        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED)
+        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED, reason="You must be logged in to do that.")
 
     piece = GalleryPiece.objects.get(id=piece_id)
 
@@ -55,7 +56,7 @@ def piece_detail(request, piece_id):
 
 def new_gallery_piece(request):
     if not request.user.is_authenticated:
-        return HttpResponseNotAllowed("You must be logged in to do that.")
+        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED, reason="You must be logged in to do that.")
 
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
@@ -95,7 +96,7 @@ def new_gallery_piece(request):
 
 def edit_gallery_piece(request, piece_id):
     if not request.user.is_authenticated:
-        return HttpResponseNotAllowed("You must be logged in to do that.")
+        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED, reason="You must be logged in to do that.")
 
     piece = GalleryPiece.objects.get(id=piece_id)
 
@@ -182,7 +183,7 @@ def edit_gallery_piece(request, piece_id):
 
 def delete_gallery_piece(request, piece_id):
     if not request.user.is_authenticated:
-        return HttpResponseNotAllowed("You must be logged in to do that.")
+        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED, reason="You must be logged in to do that.")
 
     piece = GalleryPiece.objects.get(id=piece_id)
 
@@ -201,7 +202,7 @@ def delete_gallery_piece(request, piece_id):
 
 def exhibitions_list_view(request):
     if not request.user.is_authenticated:
-        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED)
+        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED, reason="You must be logged in to do that.")
 
     exhibs_list = Exhibition.objects.filter(user=request.user)
 
@@ -212,7 +213,7 @@ def exhibitions_list_view(request):
 
 def exhibition_detail(request, exhibition_id):
     if not request.user.is_authenticated:
-        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED)
+        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED, reason="You must be logged in to do that.")
 
     exhib = Exhibition.objects.get(id=exhibition_id)
 
@@ -226,7 +227,7 @@ def exhibition_detail(request, exhibition_id):
 
 def new_exhibition(request):
     if not request.user.is_authenticated:
-        return HttpResponseNotAllowed("You must be logged in to do that.")
+        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED, reason="You must be logged in to do that.")
 
     if request.method == 'POST':
         r_post = request.POST
@@ -260,7 +261,7 @@ def new_exhibition(request):
 
 def edit_exhibition(request, exhibition_id):
     if not request.user.is_authenticated:
-        return HttpResponseNotAllowed("You must be logged in to do that.")
+        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED, reason="You must be logged in to do that.")
 
     exhib = Exhibition.objects.get(id=exhibition_id)
 
@@ -333,7 +334,7 @@ def edit_exhibition(request, exhibition_id):
 
 def delete_exhibition(request, exhibition_id):
     if not request.user.is_authenticated:
-        return HttpResponseNotAllowed("You must be logged in to do that.")
+        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED, reason="You must be logged in to do that.")
 
     exhib = Exhibition.objects.get(id=exhibition_id)
 
