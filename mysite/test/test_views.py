@@ -6,7 +6,8 @@ from django.test import RequestFactory, TestCase, override_settings
 from django.contrib.auth.models import AnonymousUser, User
 
 # noinspection PyUnresolvedReferences
-from gallery.views import new_gallery_piece, new_exhibition, delete_gallery_piece, edit_gallery_piece, piece_detail
+from gallery.views import new_gallery_piece, new_exhibition, delete_gallery_piece, edit_gallery_piece, piece_detail, \
+    pieces_list_view
 # noinspection PyUnresolvedReferences
 from gallery.models import GalleryPiece
 
@@ -31,6 +32,33 @@ def middleware(request):
     m_middleware.process_request(request)
     request.session.save()
     yield request
+
+
+class GalleryPieceListTest(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.user = User.objects.create_user(
+            username="jacob", email="jacob@…", password="top_secret"
+        )
+        self.anonUser = AnonymousUser()
+
+    def test_piece_list(self):
+        request = self.factory.get("/gallery/pieces")
+        request.user = self.user
+
+        with middleware(request):
+            response = pieces_list_view(request)
+
+        self.assertEqual(200, response.status_code)
+
+    def test_pieces_list_anonymous_user(self):
+        request = self.factory.get("/gallery/pieces")
+        request.user = self.anonUser
+
+        with middleware(request):
+            response = pieces_list_view(request)
+
+        self.assertEqual(NON_AUTHENTICATED_STATUS_CODE, response.status_code)
 
 
 @override_settings(MEDIA_ROOT=MEDIA_ROOT)
@@ -191,7 +219,7 @@ class GalleryPieceDetailTest(TestCase):
         self.piece_id = self.piece.id
 
     def test_piece_detail(self):
-        request = self.factory.get("/gallery/exhibitions/" + str(self.piece_id))
+        request = self.factory.get("/gallery/pieces/" + str(self.piece_id))
         request.user = self.user
 
         with middleware(request):
@@ -200,7 +228,7 @@ class GalleryPieceDetailTest(TestCase):
         self.assertEqual(200, response.status_code)
 
     def test_piece_detail_anonymous_user(self):
-        request = self.factory.get("/gallery/exhibitions/" + str(self.piece_id))
+        request = self.factory.get("/gallery/pieces/" + str(self.piece_id))
         request.user = self.anonUser
 
         with middleware(request):
@@ -209,7 +237,7 @@ class GalleryPieceDetailTest(TestCase):
         self.assertEqual(NON_AUTHENTICATED_STATUS_CODE, response.status_code)
 
     def test_piece_detail_wrong_user(self):
-        request = self.factory.get("/gallery/exhibitions/" + str(self.piece_id))
+        request = self.factory.get("/gallery/pieces/" + str(self.piece_id))
         request.user = User.objects.create_user(
             username="jacob2", email="jacob2@…", password="top2_secret"
         )
@@ -258,7 +286,7 @@ class GalleryPieceDeleteTest(TestCase):
     def test_delete_piece(self):
         self.assertEqual(1, len(GalleryPiece.objects.all()))
 
-        request = self.factory.get("/gallery/exhibitions/" + str(self.piece_id) + "/delete")
+        request = self.factory.get("/gallery/pieces/" + str(self.piece_id) + "/delete")
         request.user = self.user
 
         with middleware(request):
@@ -271,7 +299,7 @@ class GalleryPieceDeleteTest(TestCase):
     def test_delete_piece_anonymous_user(self):
         self.assertEqual(1, len(GalleryPiece.objects.all()))
 
-        request = self.factory.get("/gallery/exhibitions/" + str(self.piece_id) + "/delete")
+        request = self.factory.get("/gallery/pieces/" + str(self.piece_id) + "/delete")
         request.user = self.anonUser
 
         with middleware(request):
@@ -284,7 +312,7 @@ class GalleryPieceDeleteTest(TestCase):
     def test_delete_piece_wrong_user(self):
         self.assertEqual(1, len(GalleryPiece.objects.all()))
 
-        request = self.factory.get("/gallery/exhibitions/" + str(self.piece_id) + "/delete")
+        request = self.factory.get("/gallery/pieces/" + str(self.piece_id) + "/delete")
         request.user = User.objects.create_user(
             username="jacob2", email="jacob2@…", password="top2_secret"
         )
