@@ -1,8 +1,7 @@
 import http
 
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, HttpResponseBadRequest, \
-    HttpResponseNotAllowed
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, HttpResponseBadRequest
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.contrib import messages
@@ -63,40 +62,77 @@ def new_gallery_piece(request):
     if not request.user.is_authenticated:
         return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED, reason="You must be logged in to do that.")
 
+    created_title = ""
+    created_desc = ""
+    uploaded_img = None
+    title_error = ""
+    desc_error = ""
+    img_error = ""
+
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
         r_post = request.POST
         r_files = request.FILES
 
-        # check whether it's valid:
-        try:
-            validate_new_gallery_piece_form(dict(list(r_post.items())[1:]), r_files)
-        except ValidationError:
-            return HttpResponseBadRequest("Form data invalid")
-        else:
-            piece_title = r_post['pieceTitle']
-            piece_desc = r_post['pieceDescription']
-            piece_image = r_files['pieceImage']
+        if "pieceTitle" not in r_post \
+                or "pieceDescription" not in r_post:
+            return HttpResponseBadRequest("Required fields not in POST data")
 
+        created_title = r_post["pieceTitle"]
+        created_desc = r_post["pieceDescription"]
+
+        save = True
+
+        try:
+            validate_gallery_piece_title(created_title)
+        except ValidationError as e:
+            title_error = e.message
+            save = False
+
+        try:
+            validate_gallery_piece_description(created_desc)
+        except ValidationError as e:
+            desc_error = e.message
+            save = False
+
+        if "pieceImage" not in r_files:
+            img_error = "You must upload an image."
+            save = False
+        else:
+            uploaded_img = r_files["pieceImage"]
+
+            try:
+                validate_gallery_piece_image(uploaded_img)
+            except ValidationError as e:
+                img_error = e.message
+                save = False
+
+        if save:
             # construct a new gallery piece with the form data
-            new_gallery_piece = GalleryPiece(title=piece_title,
-                                             description=piece_desc,
-                                             pub_date=timezone.now(),
-                                             user=request.user,
-                                             image=piece_image)
-            new_gallery_piece.clean()
+            created_gallery_piece = GalleryPiece(title=created_title,
+                                                 description=created_desc,
+                                                 pub_date=timezone.now(),
+                                                 user=request.user,
+                                                 image=uploaded_img)
+            created_gallery_piece.clean()
 
             # save the new gallery piece to the database
-            new_gallery_piece.save()
+            created_gallery_piece.save()
 
             messages.success(request, "Piece created successfully.")
 
-            return HttpResponseRedirect("/gallery/pieces")
+            return HttpResponseRedirect("/gallery/pieces/")
+        else:
+            messages.error(request, "Invalid Piece info. Please correct the errors below.")
 
     # if a GET (or any other method) we'll render the new gallery piece form
-    else:
-        return render(request=request,
-                      template_name="mysite/gallery_piece_new.html")
+    return render(request=request,
+                  template_name="mysite/gallery_piece_new.html",
+                  context={'created_title': created_title,
+                           'created_desc': created_desc,
+                           'title_error': title_error,
+                           'desc_error': desc_error,
+                           'img_error': img_error})
 
 
 def edit_gallery_piece(request, piece_id):
@@ -397,7 +433,7 @@ def validate_gallery_piece_image(img):
         raise ValidationError("Invalid file format")
 
     if img.size > MAX_IMG_SIZE_BYTES:
-        raise ValidationError("File too large")
+        raise ValidationError("File too large (Max 10 MB)")
 
 
 def validate_new_gallery_piece_form(form_data, file_data):

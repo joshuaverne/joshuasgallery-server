@@ -87,9 +87,11 @@ class GalleryPieceCreateTest(TestCase):
 
         request.user = self.user
 
-        response = new_gallery_piece(request)
+        with middleware(request):
+            response = new_gallery_piece(request)
 
         self.assertEqual(200, response.status_code)
+        self.assertEquals(0, len(GalleryPiece.objects.all()))
 
     def test_create_piece(self):
         with open("test/images/woody.jpg", "rb") as fp:
@@ -111,6 +113,7 @@ class GalleryPieceCreateTest(TestCase):
             self.assertEqual(self.user, p.user)
             self.assertEqual(self.good_title, p.title)
             self.assertEqual(self.good_desc, p.description)
+            self.assertEquals(1, len(all_pieces))
 
     def test_create_piece_anonymous_user(self):
         with open("test/images/woody.jpg", "rb") as fp:
@@ -122,9 +125,11 @@ class GalleryPieceCreateTest(TestCase):
 
             request.user = self.anonUser
 
-            response = new_gallery_piece(request)
+            with middleware(request):
+                response = new_gallery_piece(request)
 
         self.assertEqual(NON_AUTHENTICATED_STATUS_CODE, response.status_code)
+        self.assertEquals(0, len(GalleryPiece.objects.all()))
 
     def test_create_piece_title_too_long(self):
         title = "x" * 501
@@ -138,9 +143,11 @@ class GalleryPieceCreateTest(TestCase):
 
             request.user = self.user
 
-            response = new_gallery_piece(request)
+            with middleware(request):
+                response = new_gallery_piece(request)
 
-        self.assertEqual(400, response.status_code)
+        self.assertEqual(200, response.status_code)
+        self.assertEquals(0, len(GalleryPiece.objects.all()))
 
     def test_create_piece_description_too_long(self):
         desc = "x" * 1001
@@ -154,9 +161,11 @@ class GalleryPieceCreateTest(TestCase):
 
             request.user = self.user
 
-            response = new_gallery_piece(request)
+            with middleware(request):
+                response = new_gallery_piece(request)
 
-        self.assertEqual(400, response.status_code)
+        self.assertEqual(200, response.status_code)
+        self.assertEquals(0, len(GalleryPiece.objects.all()))
 
     def test_create_piece_image_too_large(self):
         with open("test/images/city.jpg", "rb") as fp:
@@ -168,9 +177,11 @@ class GalleryPieceCreateTest(TestCase):
 
             request.user = self.user
 
-            response = new_gallery_piece(request)
+            with middleware(request):
+                response = new_gallery_piece(request)
 
-        self.assertEqual(400, response.status_code)
+        self.assertEqual(200, response.status_code)
+        self.assertEquals(0, len(GalleryPiece.objects.all()))
 
     def test_create_piece_wrong_image_type(self):
         with open("test/images/dragon.gif", "rb") as fp:
@@ -183,9 +194,11 @@ class GalleryPieceCreateTest(TestCase):
 
             request.user = self.user
 
-            response = new_gallery_piece(request)
+            with middleware(request):
+                response = new_gallery_piece(request)
 
-        self.assertEqual(400, response.status_code)
+        self.assertEquals(200, response.status_code)
+        self.assertEquals(0, len(GalleryPiece.objects.all()))
 
 
 @override_settings(MEDIA_ROOT=MEDIA_ROOT)
