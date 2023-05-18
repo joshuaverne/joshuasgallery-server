@@ -663,6 +663,64 @@ class ExhibitionDetailTest(TestCase):
         self.assertEquals(FORBIDDEN_STATUS_CODE, response.status_code)
 
 
+class ExhibitionDeleteTest(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.user = User.objects.create_user(
+            username="jacob", email="jacob@…", password="top_secret"
+        )
+        self.anonUser = AnonymousUser()
+        self.good_title = 'x' * 200
+        self.good_desc = 'x' * 1000
+
+        test_post_data = {'placeholder': "PLACEHOLDER",
+                          'exhibitionTitle': self.good_title,
+                          'exhibitionDescription': self.good_desc}
+
+        request = self.factory.post("/gallery/exhibitions/new", test_post_data)
+        request.user = self.user
+        with middleware(request):
+            new_exhibition(request)
+
+        self.exhib = Exhibition.objects.all()[0]
+        self.exhib_id = self.exhib.id
+
+    def test_delete_exhibition(self):
+        request = self.factory.get("/gallery/exhibitions/" + str(self.exhib_id) + "/delete")
+        request.user = self.user
+
+        with middleware(request):
+            response = delete_exhibition(request, self.exhib_id)
+
+        self.assertEquals(302, response.status_code)
+
+        self.assertEquals(0, len(Exhibition.objects.all()))
+
+    def test_delete_exhibition_anonymous_user(self):
+        request = self.factory.get("/gallery/exhibitions/" + str(self.exhib_id) + "/delete")
+        request.user = self.anonUser
+
+        with middleware(request):
+            response = delete_exhibition(request, self.exhib_id)
+
+        self.assertEquals(NON_AUTHENTICATED_STATUS_CODE, response.status_code)
+
+        self.assertEquals(1, len(Exhibition.objects.all()))
+
+    def test_delete_exhibition_wrong_user(self):
+        request = self.factory.get("/gallery/exhibitions/" + str(self.exhib_id) + "/delete")
+        request.user = User.objects.create_user(
+            username="jacob2", email="jacob2@…", password="top2_secret"
+        )
+
+        with middleware(request):
+            response = delete_exhibition(request, self.exhib_id)
+
+        self.assertEquals(FORBIDDEN_STATUS_CODE, response.status_code)
+
+        self.assertEquals(1, len(Exhibition.objects.all()))
+
+
 class ExhibitionEditTest(TestCase):
 
     def setUp(self):
