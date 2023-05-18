@@ -436,33 +436,6 @@ def validate_gallery_piece_image(img):
         raise ValidationError("File too large (Max 10 MB)")
 
 
-def validate_new_gallery_piece_form(form_data, file_data):
-    if len(file_data) != 1:
-        raise ValidationError("Incorrect number of fields in FILES data: " + str(len(file_data)) + " (expected 1)")
-
-    if len(form_data) != 2:
-        raise ValidationError("Incorrect number of fields in POST data: " + str(len(form_data)) + " (expected 2)")
-
-    title = form_data['pieceTitle']
-    desc = form_data['pieceDescription']
-    img = file_data['pieceImage']
-
-    if len(title) > PIECE_TITLE_LEN_MAX:
-        raise ValidationError("Title too long")
-
-    if len(desc) > PIECE_DESC_LEN_MAX:
-        raise ValidationError("Description too long")
-
-    img_ext = img.name.split(".")[-1]
-    if img_ext not in ALLOWED_IMG_EXTENSIONS:
-        raise ValidationError("Invalid file format: " + img_ext)
-
-    if img.size > MAX_IMG_SIZE_BYTES:
-        raise ValidationError("File too large")
-
-    return True
-
-
 def validate_exhibition_title(t):
     if not t:
         raise ValidationError("Title cannot be blank.")
