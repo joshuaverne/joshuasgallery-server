@@ -664,6 +664,7 @@ class ExhibitionDetailTest(TestCase):
 
 
 class ExhibitionDeleteTest(TestCase):
+
     def setUp(self):
         self.factory = RequestFactory()
         self.user = User.objects.create_user(
@@ -731,3 +732,107 @@ class ExhibitionEditTest(TestCase):
         self.anonUser = AnonymousUser()
         self.good_title = 'x' * EXHIB_TITLE_MAX_LEN
         self.good_desc = 'x' * EXHIB_DESC_MAX_LEN
+
+        test_post_data = {'placeholder': "PLACEHOLDER",
+                          'exhibitionTitle': self.good_title,
+                          'exhibitionDescription': self.good_desc}
+
+        request = self.factory.post("/gallery/exhibitions/new", test_post_data)
+        request.user = self.user
+        with middleware(request):
+            new_exhibition(request)
+
+        self.exhib = Exhibition.objects.all()[0]
+        self.exhib_id = self.exhib.id
+
+    def test_edit_exhibition_all_fields(self):
+        new_title = "New title!"
+        new_desc = "New description!"
+
+        test_post_data = {'placeholder': "PLACEHOLDER",
+                          'exhibTitle': new_title,
+                          'exhibDesc': new_desc}
+
+        request = self.factory.post("/gallery/exhibitions/" + str(self.exhib_id) + "/edit", test_post_data)
+        request.user = self.user
+        with middleware(request):
+            response = edit_exhibition(request, self.exhib_id)
+
+        self.assertEquals(200, response.status_code)
+        edited_exhib = Exhibition.objects.all()[0]
+        self.assertEquals(new_title, edited_exhib.title)
+        self.assertEquals(new_desc, edited_exhib.description)
+
+    def test_edit_exhibition_anonymous_user(self):
+        new_title = "New title!"
+        new_desc = "New description!"
+
+        test_post_data = {'placeholder': "PLACEHOLDER",
+                          'exhibTitle': new_title,
+                          'exhibDesc': new_desc}
+
+        request = self.factory.post("/gallery/exhibitions/" + str(self.exhib_id) + "/edit", test_post_data)
+        request.user = self.anonUser
+        with middleware(request):
+            response = edit_exhibition(request, self.exhib_id)
+
+        self.assertEquals(NON_AUTHENTICATED_STATUS_CODE, response.status_code)
+        edited_exhib = Exhibition.objects.all()[0]
+        self.assertEquals(self.good_title, edited_exhib.title)
+        self.assertEquals(self.good_desc, edited_exhib.description)
+
+    def test_edit_exhibition_wrong_user(self):
+        new_title = "New title!"
+        new_desc = "New description!"
+
+        test_post_data = {'placeholder': "PLACEHOLDER",
+                          'exhibTitle': new_title,
+                          'exhibDesc': new_desc}
+
+        request = self.factory.post("/gallery/exhibitions/" + str(self.exhib_id) + "/edit", test_post_data)
+        request.user = User.objects.create_user(
+            username="jacob2", email="jacob2@…", password="top2_secret"
+        )
+        with middleware(request):
+            response = edit_exhibition(request, self.exhib_id)
+
+        self.assertEquals(FORBIDDEN_STATUS_CODE, response.status_code)
+        edited_exhib = Exhibition.objects.all()[0]
+        self.assertEquals(self.good_title, edited_exhib.title)
+        self.assertEquals(self.good_desc, edited_exhib.description)
+
+    def test_edit_exhibition_bad_title(self):
+        new_title = "x" * (EXHIB_TITLE_MAX_LEN + 1)
+        new_desc = "New description!"
+
+        test_post_data = {'placeholder': "PLACEHOLDER",
+                          'exhibTitle': new_title,
+                          'exhibDesc': new_desc}
+
+        request = self.factory.post("/gallery/exhibitions/" + str(self.exhib_id) + "/edit", test_post_data)
+        request.user = self.user
+        with middleware(request):
+            response = edit_exhibition(request, self.exhib_id)
+
+        self.assertEquals(200, response.status_code)
+        edited_exhib = Exhibition.objects.all()[0]
+        self.assertEquals(self.good_title, edited_exhib.title)
+        self.assertEquals(self.good_desc, edited_exhib.description)
+
+    def test_edit_exhibition_bad_description(self):
+        new_title = "New title!"
+        new_desc = "x" * (EXHIB_DESC_MAX_LEN + 1)
+
+        test_post_data = {'placeholder': "PLACEHOLDER",
+                          'exhibTitle': new_title,
+                          'exhibDesc': new_desc}
+
+        request = self.factory.post("/gallery/exhibitions/" + str(self.exhib_id) + "/edit", test_post_data)
+        request.user = self.user
+        with middleware(request):
+            response = edit_exhibition(request, self.exhib_id)
+
+        self.assertEquals(200, response.status_code)
+        edited_exhib = Exhibition.objects.all()[0]
+        self.assertEquals(self.good_title, edited_exhib.title)
+        self.assertEquals(self.good_desc, edited_exhib.description)
