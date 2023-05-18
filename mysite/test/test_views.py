@@ -1,4 +1,6 @@
-import contextlib, shutil, tempfile
+import contextlib
+import shutil
+import tempfile
 
 from django.contrib.messages.middleware import MessageMiddleware
 from django.contrib.sessions.middleware import SessionMiddleware
@@ -6,8 +8,7 @@ from django.test import RequestFactory, TestCase, override_settings
 from django.contrib.auth.models import AnonymousUser, User
 
 # noinspection PyUnresolvedReferences
-from gallery.views import new_gallery_piece, new_exhibition, delete_gallery_piece, edit_gallery_piece, piece_detail, \
-    pieces_list_view
+from gallery.views import *
 # noinspection PyUnresolvedReferences
 from gallery.models import GalleryPiece
 
@@ -518,7 +519,34 @@ class GalleryPieceEditTest(TestCase):
         self.assertEquals(self.img_url, checked_piece.image.url)
 
 
-class ExhibitionFormViewTest(TestCase):
+class ExhibitionListTest(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.user = User.objects.create_user(
+            username="jacob", email="jacob@…", password="top_secret"
+        )
+        self.anonUser = AnonymousUser()
+
+    def test_exhibition_list(self):
+        request = self.factory.get("/gallery/exhibitions")
+        request.user = self.user
+
+        with middleware(request):
+            response = exhibitions_list_view(request)
+
+        self.assertEqual(200, response.status_code)
+
+    def test_exhibition_list_anonymous_user(self):
+        request = self.factory.get("/gallery/exhibitions")
+        request.user = self.anonUser
+
+        with middleware(request):
+            response = exhibitions_list_view(request)
+
+        self.assertEqual(NON_AUTHENTICATED_STATUS_CODE, response.status_code)
+
+
+class ExhibitionCreateTest(TestCase):
 
     def setUp(self):
         self.factory = RequestFactory()
