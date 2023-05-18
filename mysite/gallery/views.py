@@ -427,19 +427,6 @@ def validate_new_gallery_piece_form(form_data, file_data):
     return True
 
 
-def validate_exhibition_title(t):
-    if len(t) > EXHIB_TITLE_LEN_MAX:
-        raise ValidationError("Title is too long (Max 200 characters")
-
-    if len(t) < 1:
-        raise ValidationError("Title cannot be blank")
-
-
-def validate_exhibition_description(d):
-    if len(d) > EXHIB_DESC_LEN_MAX:
-        raise ValidationError("Description is too long (Max 1000 characters")
-
-
 def validate_new_exhibition_form(form_data):
     if len(form_data) != 2:
         raise ValidationError("Incorrect number of fields in FORM data: " + str(len(form_data)) + " (expected 2)")
@@ -461,14 +448,10 @@ def validate_exhibition_title(t):
     if not t:
         raise ValidationError("Title cannot be blank.")
 
-    if len(t) > 200:
+    if len(t) > EXHIB_TITLE_LEN_MAX:
         raise ValidationError("Title is too long (Max 200 characters)")
-
-    return
 
 
 def validate_exhibition_description(d):
-    if len(d) > 1000:
-        raise ValidationError("Description is too long (Max 1000 characters)"
-                              "")
-    return
+    if len(d) > EXHIB_DESC_LEN_MAX:
+        raise ValidationError("Description is too long (Max 1000 characters)")
