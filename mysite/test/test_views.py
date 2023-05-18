@@ -15,10 +15,10 @@ from gallery.models import GalleryPiece
 EXHIB_TITLE_MAX_LEN = 200
 EXHIB_DESC_MAX_LEN = 1000
 
-MEDIA_ROOT = tempfile.mktemp()
-
 NON_AUTHENTICATED_STATUS_CODE = 401
 FORBIDDEN_STATUS_CODE = 403
+
+MEDIA_ROOT = tempfile.mktemp()
 
 
 @contextlib.contextmanager
@@ -569,6 +569,7 @@ class ExhibitionCreateTest(TestCase):
             response = new_exhibition(request)
 
         self.assertEqual(302, response.status_code)
+        self.assertEquals(1, len(Exhibition.objects.all()))
 
     def test_create_exhibition_anonymous_user(self):
         test_post_data = {'placeholder': "PLACEHOLDER",
@@ -596,7 +597,8 @@ class ExhibitionCreateTest(TestCase):
         with middleware(request):
             response = new_exhibition(request)
 
-        self.assertEqual(400, response.status_code)
+        self.assertEqual(200, response.status_code)
+        self.assertEquals(0, len(Exhibition.objects.all()))
 
     def test_create_exhibition_description_too_long(self):
         long_desc = 'x' * 1001
@@ -611,7 +613,8 @@ class ExhibitionCreateTest(TestCase):
         with middleware(request):
             response = new_exhibition(request)
 
-        self.assertEqual(400, response.status_code)
+        self.assertEqual(200, response.status_code)
+        self.assertEquals(0, len(Exhibition.objects.all()))
 
 
 class ExhibitionDetailTest(TestCase):

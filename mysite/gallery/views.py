@@ -19,6 +19,7 @@ MAX_IMG_SIZE_BYTES = 10000000
 
 FORBIDDEN_MSG = "You do not have access to this."
 
+
 def index(request):
     if not request.user.is_authenticated:
         return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED)
@@ -233,34 +234,56 @@ def new_exhibition(request):
     if not request.user.is_authenticated:
         return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED, reason="You must be logged in to do that.")
 
+    created_title = ""
+    created_desc = ""
+    title_error = ""
+    desc_error = ""
+
     if request.method == 'POST':
         r_post = request.POST
 
-        # validate
+        if "exhibitionTitle" not in r_post or "exhibitionDescription" not in r_post:
+            return HttpResponseBadRequest("Required fields not in POST data")
+
+        created_title = r_post["exhibitionTitle"]
+        created_desc = r_post["exhibitionDescription"]
+
+        save = True
+
         try:
-            validate_new_exhibition_form(dict(list(r_post.items())[1:]))
-        except ValidationError:
-            return HttpResponseBadRequest("Form data invalid")
-        else:
-            exhib_title = r_post['exhibitionTitle']
-            exhib_desc = r_post['exhibitionDescription']
+            validate_exhibition_title(created_title)
+        except ValidationError as e:
+            title_error = e.message
+            save = False
 
+        try:
+            validate_exhibition_description(created_desc)
+        except ValidationError as e:
+            desc_error = e.message
+            save = False
+
+        if save:
             # construct a new exhibition with the form data
-            new_exhibition = Exhibition(title=exhib_title,
-                                        description=exhib_desc,
-                                        user=request.user)
+            created_exhibition = Exhibition(title=created_title,
+                                            description=created_desc,
+                                            user=request.user)
 
-            new_exhibition.save()
+            created_exhibition.save()
 
             messages.success(request, "Exhibition created successfully.")
 
             # redirect to a new URL:
             return HttpResponseRedirect("/gallery/exhibitions")
+        else:
+            messages.error(request, "Invalid Exhibition info. Please correct the errors below.")
 
-    # if a GET (or any other method) we'll render the new exhibition form
-    else:
-        return render(request=request,
-                      template_name="mysite/exhibition_new.html")
+    # if a GET or invalid form input, render the new exhibition form
+    return render(request=request,
+                  template_name="mysite/exhibition_new.html",
+                  context={'created_title': created_title,
+                           'created_desc': created_desc,
+                           'title_error': title_error,
+                           'desc_error': desc_error})
 
 
 def edit_exhibition(request, exhibition_id):
@@ -357,7 +380,7 @@ def delete_exhibition(request, exhibition_id):
 
 def validate_gallery_piece_title(t):
     if len(t) > PIECE_TITLE_LEN_MAX:
-        raise ValidationError("Title is too long (Max 200 characters)")
+        raise ValidationError("Title is too long (Max 500 characters)")
 
     if len(t) < 1:
         raise ValidationError("Title cannot be blank")
@@ -404,6 +427,19 @@ def validate_new_gallery_piece_form(form_data, file_data):
     return True
 
 
+def validate_exhibition_title(t):
+    if len(t) > EXHIB_TITLE_LEN_MAX:
+        raise ValidationError("Title is too long (Max 200 characters")
+
+    if len(t) < 1:
+        raise ValidationError("Title cannot be blank")
+
+
+def validate_exhibition_description(d):
+    if len(d) > EXHIB_DESC_LEN_MAX:
+        raise ValidationError("Description is too long (Max 1000 characters")
+
+
 def validate_new_exhibition_form(form_data):
     if len(form_data) != 2:
         raise ValidationError("Incorrect number of fields in FORM data: " + str(len(form_data)) + " (expected 2)")
@@ -413,6 +449,9 @@ def validate_new_exhibition_form(form_data):
 
     if len(title) > EXHIB_TITLE_LEN_MAX:
         raise ValidationError("Exhibition title too long")
+
+    if len(title) < 1:
+        raise ValidationError("Title cannot be blank")
 
     if len(desc) > EXHIB_DESC_LEN_MAX:
         raise ValidationError("Exhibition description too long")

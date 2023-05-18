@@ -10,10 +10,10 @@
 {% bootstrap_javascript %}
 
 {# Display django.contrib.messages as Bootstrap alerts #}
-{% bootstrap_messages %}
 
 <!--Login-->
 <div class="container py-5" style="max-width: 576px;">
+    {% bootstrap_messages %}
     <h1>Login</h1>
     <form method="POST">
         {% csrf_token %}

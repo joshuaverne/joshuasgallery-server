@@ -10,9 +10,9 @@
 {% bootstrap_javascript %}
 
 {# Display django.contrib.messages as Bootstrap alerts #}
-{% bootstrap_messages %}
 
 <div class="container py-5">
+  {% bootstrap_messages %}
   <h3>Creating New Exhibition</h3>
   {% include 'mysite/forms/new_exhibition_form.html' %}
 </div>
