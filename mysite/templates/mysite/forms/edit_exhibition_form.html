@@ -1,7 +1,7 @@
 <form action="/gallery/exhibitions/{{ exhib_id }}/edit/" enctype="multipart/form-data" method="post">
   {% csrf_token %}
   <div class="form-group my-3">
-    <label class="mb-1" for="exhibTitle">Title<span style="color: red;">*</span></label>
+    <label class="mb-1" for="exhibTitle">Title</label>
     <input class="form-control" id="exhibTitle" name="exhibTitle"
            placeholder="Enter exhibition title" value="{{ exhib_title }}">
     <div style="color: red">{{ title_error }}</div>
