@@ -16,6 +16,7 @@ EXHIB_TITLE_LEN_MAX = 200
 EXHIB_DESC_LEN_MAX = 1000
 MAX_IMG_SIZE_BYTES = 10000000
 
+UNAUTHENTICATED_MSG = "You must be logged in to do that."
 FORBIDDEN_MSG = "You do not have access to this."
 
 
@@ -35,7 +36,7 @@ def index(request):
 
 def pieces_list_view(request):
     if not request.user.is_authenticated:
-        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED, reason="You must be logged in to do that.")
+        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED, reason=UNAUTHENTICATED_MSG)
 
     pieces_list = GalleryPiece.objects.filter(user=request.user)
 
@@ -46,7 +47,7 @@ def pieces_list_view(request):
 
 def piece_detail(request, piece_id):
     if not request.user.is_authenticated:
-        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED, reason="You must be logged in to do that.")
+        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED, reason=UNAUTHENTICATED_MSG)
 
     piece = GalleryPiece.objects.get(id=piece_id)
 
@@ -60,7 +61,7 @@ def piece_detail(request, piece_id):
 
 def new_gallery_piece(request):
     if not request.user.is_authenticated:
-        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED, reason="You must be logged in to do that.")
+        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED, reason=UNAUTHENTICATED_MSG)
 
     created_title = ""
     created_desc = ""
@@ -137,7 +138,7 @@ def new_gallery_piece(request):
 
 def edit_gallery_piece(request, piece_id):
     if not request.user.is_authenticated:
-        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED, reason="You must be logged in to do that.")
+        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED, reason=UNAUTHENTICATED_MSG)
 
     piece = GalleryPiece.objects.get(id=piece_id)
 
@@ -224,7 +225,7 @@ def edit_gallery_piece(request, piece_id):
 
 def delete_gallery_piece(request, piece_id):
     if not request.user.is_authenticated:
-        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED, reason="You must be logged in to do that.")
+        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED, reason=UNAUTHENTICATED_MSG)
 
     piece = GalleryPiece.objects.get(id=piece_id)
 
@@ -243,7 +244,7 @@ def delete_gallery_piece(request, piece_id):
 
 def exhibitions_list_view(request):
     if not request.user.is_authenticated:
-        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED, reason="You must be logged in to do that.")
+        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED, reason=UNAUTHENTICATED_MSG)
 
     exhibs_list = Exhibition.objects.filter(user=request.user)
 
@@ -254,7 +255,7 @@ def exhibitions_list_view(request):
 
 def exhibition_detail(request, exhibition_id):
     if not request.user.is_authenticated:
-        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED, reason="You must be logged in to do that.")
+        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED, reason=UNAUTHENTICATED_MSG)
 
     exhib = Exhibition.objects.get(id=exhibition_id)
 
@@ -268,7 +269,7 @@ def exhibition_detail(request, exhibition_id):
 
 def new_exhibition(request):
     if not request.user.is_authenticated:
-        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED, reason="You must be logged in to do that.")
+        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED, reason=UNAUTHENTICATED_MSG)
 
     created_title = ""
     created_desc = ""
@@ -324,7 +325,7 @@ def new_exhibition(request):
 
 def edit_exhibition(request, exhibition_id):
     if not request.user.is_authenticated:
-        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED, reason="You must be logged in to do that.")
+        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED, reason=UNAUTHENTICATED_MSG)
 
     exhib = Exhibition.objects.get(id=exhibition_id)
 
@@ -397,7 +398,7 @@ def edit_exhibition(request, exhibition_id):
 
 def delete_exhibition(request, exhibition_id):
     if not request.user.is_authenticated:
-        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED, reason="You must be logged in to do that.")
+        return HttpResponse(status=http.HTTPStatus.UNAUTHORIZED, reason=UNAUTHENTICATED_MSG)
 
     exhib = Exhibition.objects.get(id=exhibition_id)
 
