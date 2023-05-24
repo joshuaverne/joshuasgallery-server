@@ -17,7 +17,7 @@ class LoginTest(LiveServerTestCase):
         super().tearDownClass()
 
     def testLogin(self):
-        successful_login_msg = 'You\'re at the homepage!'
+        successful_login_msg = 'Homepage'
 
         self.selenium.get('http://localhost:8000/login')
 
@@ -77,7 +77,7 @@ class NavTest(LiveServerTestCase):
         submit_btn.send_keys(Keys.RETURN)
 
     def testGalleryDash(self):
-        gallery_text = "Welcome to the gallery dashboard!"
+        gallery_text = "Dashboard"
 
         self.login()
         nav_btn = self.selenium.find_element(By.ID, "navbar_toggle_button")
