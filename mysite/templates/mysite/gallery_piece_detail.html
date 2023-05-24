@@ -17,7 +17,8 @@
     <li class="list-group-item d-flex flex-row border-dark bg-dark">
       <div class="h3 my-auto text-white me-auto">{{ piece.title }}</div>
       <a href="/gallery/pieces/{{ piece.id }}/edit/" class="btn btn-outline-light me-2">Edit</a>
-      <a href="/gallery/pieces/{{ piece.id }}/delete/" class="btn btn-outline-danger">Delete</a>
+      <a href="/gallery/pieces/{{ piece.id }}/delete/" class="btn btn-outline-danger"
+         onclick="return confirm('Are you sure you want to delete this exhibition?');">Delete</a>
     </li>
     <li class="list-group-item bg-white border-dark">
       <div class="container">
