@@ -4,7 +4,7 @@
 
 The Joshua's Gallery webserver
 
-## Server Setup (Ubnutu 22)
+## Server Setup (Ubuntu 22)
 
 ---
 
