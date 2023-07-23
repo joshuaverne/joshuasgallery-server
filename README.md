@@ -1,13 +1,7 @@
 # joshuasgallery-server
-
----
-
 The Joshua's Gallery webserver
 
 ## Server Setup (Ubuntu 22)
-
----
-
 **Install OS Packages**
 
 - `sudo apt update && sudo apt upgrade -y`
