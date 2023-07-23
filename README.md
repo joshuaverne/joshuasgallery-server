@@ -1,4 +1,4 @@
-# learning_django_docker
+# joshuasgallery-server
 
 ---
 
