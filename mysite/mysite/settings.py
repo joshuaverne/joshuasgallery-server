@@ -126,31 +126,29 @@ if ENV == ENV_LOCAL:
         }
     }
 elif ENV == ENV_DEV:
-    with open(os.path.join(BASE_DIR, '../config/jg-dev-freetier_pw.txt')) as f:
-        DB_PW = f.read().strip()
+    with open(os.path.join(BASE_DIR, '../config/conf/db_info.txt')) as f:
+        db_info = f.readlines()
     DATABASES = {
         'default': {
-            # this DB has been created in the RDS instance
-            'NAME': 'jg_dev',
-            'ENGINE': 'django.db.backends.mysql',
-            'USER': 'admin',
-            'PASSWORD': DB_PW,
-            'HOST': 'jg-dev-freetier.c6ytnqpjyedh.us-east-1.rds.amazonaws.com',
-            'POST': '3306',
+            'NAME': db_info[0],
+            'ENGINE': db_info[1],
+            'USER': db_info[2],
+            'PASSWORD': db_info[3],
+            'HOST': db_info[4],
+            'POST': db_info[5],
         }
     }
 elif ENV == ENV_PROD:
-    with open(os.path.join(BASE_DIR, '../config/jg-prod-freetier_pw.txt')) as f:
-        DB_PW = f.read().strip()
+    with open(os.path.join(BASE_DIR, '../config/conf/db_info.txt')) as f:
+        db_info = f.readlines()
     DATABASES = {
         'default': {
-            # this DB has been created in the RDS instance
-            'NAME': 'jgprod',
-            'ENGINE': 'django.db.backends.mysql',
-            'USER': 'admin',
-            'PASSWORD': DB_PW,
-            'HOST': 'jg-prod-freetier.c6ytnqpjyedh.us-east-1.rds.amazonaws.com',
-            'POST': '3306',
+            'NAME': db_info[0],
+            'ENGINE': db_info[1],
+            'USER': db_info[2],
+            'PASSWORD': db_info[3],
+            'HOST': db_info[4],
+            'POST': db_info[5],
         }
     }
 else:

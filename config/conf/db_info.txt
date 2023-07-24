@@ -1,0 +1,6 @@
+db_name     // replace this line with the name of your database
+db_engine   // replace this line with your database engine
+db_username // replace this line with the database username
+db_pw       // replace this line with the database password
+db_host     // replace this line with the database host URL
+db_post     // replace this line with the port to post to
