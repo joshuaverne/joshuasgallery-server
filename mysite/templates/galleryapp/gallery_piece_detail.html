@@ -1,4 +1,4 @@
-{% extends "mysite/header.html" %}
+{% extends "galleryapp/header.html" %}
 
 {% block content %}
 
@@ -11,22 +11,24 @@
 
 {# Display django.contrib.messages as Bootstrap alerts #}
 
-
 <div class="container py-5">
   {% bootstrap_messages %}
   <div class="list-group">
     <li class="list-group-item d-flex flex-row border-dark bg-dark">
-      <div class="h3 my-auto text-white me-auto">{{ exhib.title }}</div>
-      <a href="/gallery/exhibitions/{{ exhib.id }}/edit/" class="btn btn-outline-light me-2">Edit</a>
-      <a href="/gallery/exhibitions/{{ exhib.id }}/delete/" class="btn btn-outline-danger"
+      <div class="h3 my-auto text-white me-auto">{{ piece.title }}</div>
+      <a href="/gallery/pieces/{{ piece.id }}/edit/" class="btn btn-outline-light me-2">Edit</a>
+      <a href="/gallery/pieces/{{ piece.id }}/delete/" class="btn btn-outline-danger"
          onclick="return confirm('Are you sure you want to delete this exhibition?');">Delete</a>
     </li>
     <li class="list-group-item bg-white border-dark">
       <div class="container">
         <div class="row">
           <div class="col">
+            <img class="img-fluid" src="{{ piece.image.url }}">
+          </div>
+          <div class="col">
             <h3>Description</h3>
-            <p>{{ exhib.description }}</p>
+            <p>{{ piece.description }}</p>
           </div>
         </div>
       </div>

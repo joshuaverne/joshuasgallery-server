@@ -1,4 +1,4 @@
-{% extends "mysite/header.html" %}
+{% extends "galleryapp/header.html" %}
 
 {% block content %}
 
@@ -13,8 +13,8 @@
 
 <div class="container py-5">
   {% bootstrap_messages %}
-  <h3>Creating New Piece</h3>
-  {% include 'mysite/forms/new_gallery_piece_form.html' %}
+  <h3>Editing {{ actual_title }}</h3>
+  {% include 'galleryapp/forms/edit_gallery_piece_form.html' %}
 </div>
 
 {% endblock %}

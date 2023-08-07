@@ -16,9 +16,9 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         {% if user.is_authenticated %}
-            {% include 'mysite/header/authenticated_nav_items.html' %}
+            {% include 'galleryapp/header/authenticated_nav_items.html' %}
         {% else %}
-            {% include 'mysite/header/non_authenticated_nav_items.html' %}
+            {% include 'galleryapp/header/non_authenticated_nav_items.html' %}
         {% endif %}
     </div>
 </nav>

@@ -27,7 +27,7 @@ def index(request):
     pieces_list = GalleryPiece.objects.filter(user=request.user)
     exhibs_list = Exhibition.objects.filter(user=request.user)
     return render(request=request,
-                  template_name="mysite/my_gallery_dashboard.html",
+                  template_name="galleryapp/my_gallery_dashboard.html",
                   context={'pieces': pieces_list, 'exhibs': exhibs_list})
 
 
@@ -41,7 +41,7 @@ def pieces_list_view(request):
     pieces_list = GalleryPiece.objects.filter(user=request.user)
 
     return render(request=request,
-                  template_name="mysite/gallery_pieces_list.html",
+                  template_name="galleryapp/gallery_pieces_list.html",
                   context={'pieces': pieces_list})
 
 
@@ -55,7 +55,7 @@ def piece_detail(request, piece_id):
         return HttpResponseForbidden(reason=FORBIDDEN_MSG)
 
     return render(request=request,
-                  template_name="mysite/gallery_piece_detail.html",
+                  template_name="galleryapp/gallery_piece_detail.html",
                   context={'piece': piece})
 
 
@@ -128,7 +128,7 @@ def new_gallery_piece(request):
 
     # if a GET (or any other method) we'll render the new gallery piece form
     return render(request=request,
-                  template_name="mysite/gallery_piece_new.html",
+                  template_name="galleryapp/gallery_piece_new.html",
                   context={'created_title': created_title,
                            'created_desc': created_desc,
                            'title_error': title_error,
@@ -212,7 +212,7 @@ def edit_gallery_piece(request, piece_id):
             messages.error(request, "Invalid Piece info. Please correct the errors below.")
 
     return render(request=request,
-                  template_name="mysite/gallery_piece_detail_edit.html",
+                  template_name="galleryapp/gallery_piece_detail_edit.html",
                   context={'actual_title': actual_title,
                            'piece_title': title,
                            'piece_desc': desc,
@@ -249,7 +249,7 @@ def exhibitions_list_view(request):
     exhibs_list = Exhibition.objects.filter(user=request.user)
 
     return render(request=request,
-                  template_name="mysite/exhibitions_list.html",
+                  template_name="galleryapp/exhibitions_list.html",
                   context={'exhibs': exhibs_list})
 
 
@@ -263,7 +263,7 @@ def exhibition_detail(request, exhibition_id):
         return HttpResponseForbidden(reason=FORBIDDEN_MSG)
 
     return render(request=request,
-                  template_name='mysite/exhibition_detail.html',
+                  template_name='galleryapp/exhibition_detail.html',
                   context={'exhib': exhib})
 
 
@@ -316,7 +316,7 @@ def new_exhibition(request):
 
     # if a GET or invalid form input, render the new exhibition form
     return render(request=request,
-                  template_name="mysite/exhibition_new.html",
+                  template_name="galleryapp/exhibition_new.html",
                   context={'created_title': created_title,
                            'created_desc': created_desc,
                            'title_error': title_error,
@@ -387,7 +387,7 @@ def edit_exhibition(request, exhibition_id):
             messages.error(request, "Invalid Exhibition info. Please correct the errors below.")
 
     return render(request=request,
-                  template_name="mysite/exhibition_edit.html",
+                  template_name="galleryapp/exhibition_edit.html",
                   context={'actual_title': actual_title,
                            'exhib_title': title,
                            'exhib_desc': desc,
